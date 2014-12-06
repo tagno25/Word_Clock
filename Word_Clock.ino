@@ -1,6 +1,6 @@
 //I2C uses 2 pins
 //LCD Shift uses 3 pins (2,3,4) share data/clock?
-//LED Shift uses 3 pins (2,3,5,6)
+//LED Shift uses 4 pins (2,3,5,6)
 //switches use 3 pins (7,8,9)
 
 //Comment out to disable debug info (Should speed up execution and save space)
@@ -10,21 +10,20 @@
 #define I2CLCD
 
 //Define shift register pins
-#define DATAPIN 4
-#define CLOCKPIN 5
-#define LCDLACHPIN 6
-#define LEDLACHPIN 7
+#define DATAPIN 2
+#define CLOCKPIN 3
+#define LCDLACHPIN 4
+#define LEDLACHPIN 5
 // use output enable for dimming
-#define LEDOUTPUTENABLEPIN 8
+#define LEDOUTPUTENABLEPIN 6
 
-#define BUTTON1 9
-#define BUTTON2 10
-#define BUTTON3 11
+#define BUTTON1 7
+#define BUTTON2 8
+#define BUTTON3 9
 
 #include <Wire.h> //required for DS1307RTC.h
-#include <DS1307RTC.h> //required for RTC
-
 #include <Time.h> //Required for timekeeping
+#include <DS1307RTC.h> //required for RTC
 #include <TimeAlarms.h> //Time Scheduling
 #include <Timezone.h>    //Required to set the timzone
 
@@ -43,15 +42,18 @@ time_t utc, local;
 
 void setup()
 { 
+  #ifdef DEBUG
+  Serial.begin(9600);
+  //delay(5000);
+  //while (!Serial) ; // wait until Arduino Serial Monitor opens
+  #endif
+
   Wire.begin();
   setupDisplay();
   setupShiftRegister();
   setSyncProvider(RTC.get);   // the function to get the time from the RTC
   
   #ifdef DEBUG
-  Serial.begin(9600);
-  //delay(5000);
-  //while (!Serial) ; // wait until Arduino Serial Monitor opens
   if(timeStatus()!= timeSet) {
     Serial.println(F("Unable to sync with the RTC"));
   } else {
@@ -80,7 +82,6 @@ void setup()
   Alarm.timerRepeat(30, ledDisplayTime);
 
   wordsoff();
-  lcd.display();
 }
 
 int time[6];
