@@ -13,4 +13,11 @@ have dipswitch/jumper to enable LCD specific menu
 ----------------
 write error to display for first 60 seconds if there is no RTC detected
 
+----------------
+Setup with no LCD
+Color set by time of year/month/holiday
+
+Dimming pot on A3
+No setting time ?
+
 */

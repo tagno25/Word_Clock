@@ -6,6 +6,11 @@ LiquidCrystal595 lcd(DATAPIN,LCDLACHPIN,CLOCKPIN);     // datapin, latchpin, clo
 #endif
 
 boolean lcdOn = true;
+String sSpace = " ";
+String sColon = ":";
+String sForwardSlash = "/";
+String sTZ;
+String sLine;
 
 void setupDisplay()
 {
@@ -28,6 +33,7 @@ void switchLCD(){
     #endif
     lcdOn = false;
   } else {
+    lcd.clear();
     lcd.display();
     #ifdef DEBUG
       Serial.println(F("switchLCD (LCD On)"));
@@ -54,34 +60,27 @@ void updateLCDClock()
   utc = now();
   local = myTZ.toLocal(utc, &tcr);
   
+  sTZ = tcr -> abbrev;
+
   time[0]=hour(local)/10;
   time[1]=hour(local)%10;
   time[2]=minute(local)/10;
   time[3]=minute(local)%10;
   time[4]=second(local)/10;
   time[5]=second(local)%10;
-  date[0]=month(local)/10;
-  date[1]=month(local)%10;
-  date[2]=day(local)/10;
-  date[3]=day(local)%10;
+  date[0]=month()/10;
+  date[1]=month()%10;
+  date[2]=day()/10;
+  date[3]=day()%10;
   
   lcd.setCursor(0, 0);
-  lcd.print(now());
-  lcd.print(" ");
-  lcd.print(tcr -> abbrev);
+  sLine = utc + sSpace + sTZ;
+  lcd.print(sLine);
+  delay(1);
   lcd.setCursor(0, 1);
-  lcd.print(time[0]);
-  lcd.print(time[1]);
-  lcd.print(":");
-  lcd.print(time[2]);
-  lcd.print(time[3]);
-  lcd.print(" ");
-  lcd.print(year());
-  lcd.print("/");
-  lcd.print(date[0]);
-  lcd.print(date[1]);
-  lcd.print("/");
-  lcd.print(date[2]);
-  lcd.print(date[3]);
+  sLine = time[0] + time[1] + sColon + time[2] + time[3];
+  sLine += sSpace + year() + sForwardSlash + date[0];
+  sLine += date[1] + sForwardSlash + date[2] + date[3];
+  lcd.print(sLine);
 }
 
