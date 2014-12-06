@@ -128,7 +128,7 @@ void ledDisplayTime(){
       TWENTY; 
       MFIVE;
       TO;
-      iHour=(iHour-12)+1;
+      iHour=iHour+1;
       #ifdef DEBUG
       Serial.print(F("Twenty Five To "));
       #endif
@@ -140,7 +140,7 @@ void ledDisplayTime(){
     case 44:
       TWENTY;
       TO;
-      iHour=(iHour-12)+1;
+      iHour=iHour+1;
       #ifdef DEBUG
       Serial.print(F("Twenty To "));
       #endif
@@ -152,7 +152,7 @@ void ledDisplayTime(){
     case 49:
       QUARTER; 
       TO;
-      iHour=(iHour-12)+1;
+      iHour=iHour+1;
       #ifdef DEBUG
       Serial.print(F("Quarter To "));
       #endif
@@ -164,7 +164,7 @@ void ledDisplayTime(){
     case 54:
       MTEN;
       TO;
-      iHour=(iHour-12)+1;
+      iHour=iHour+1;
       #ifdef DEBUG
       Serial.print(F("Ten To "));
       #endif
@@ -176,7 +176,7 @@ void ledDisplayTime(){
     case 59:
       MFIVE;
       TO;
-      iHour=(iHour-12)+1;
+      iHour=iHour+1;
       #ifdef DEBUG
       Serial.print(F("Five To "));
       #endif
@@ -187,86 +187,87 @@ void ledDisplayTime(){
   
   switch (iHour) {
     case 1:
-    case 13: 
-      ONE; 
+    case 13:
+    case 25:
+      ONE;
       #ifdef DEBUG
       Serial.print(F("One"));
       #endif
       break;
     case 2:
-    case 14: 
-      TWO; 
+    case 14:
+      TWO;
       #ifdef DEBUG
       Serial.print(F("Two"));
       #endif
       break;
-    case 3: 
+    case 3:
     case 15:
-      THREE; 
+      THREE;
       #ifdef DEBUG
       Serial.print(F("Three"));
       #endif
       break;
-    case 4: 
+    case 4:
     case 16:
-      FOUR; 
+      FOUR;
       #ifdef DEBUG
       Serial.print(F("Four"));
       #endif
       break;
-    case 5: 
+    case 5:
     case 17:
-      HFIVE; 
+      HFIVE;
       #ifdef DEBUG
       Serial.print(F("Five"));
       #endif
       break;
-    case 6: 
+    case 6:
     case 18:
-      SIX; 
+      SIX;
       #ifdef DEBUG
       Serial.print(F("Six"));
       #endif
       break;
-    case 7: 
+    case 7:
     case 19:
-      SEVEN; 
+      SEVEN;
       #ifdef DEBUG
       Serial.print(F("Seven"));
       #endif
       break;
-    case 8: 
+    case 8:
     case 20:
-      EIGHT; 
+      EIGHT;
       #ifdef DEBUG
       Serial.print(F("Eight"));
       #endif
       break;
-    case 9: 
+    case 9:
     case 21:
-      NINE; 
+      NINE;
       #ifdef DEBUG
       Serial.print(F("Nine"));
       #endif
       break;
     case 10:
     case 22: 
-      HTEN; 
+      HTEN;
       #ifdef DEBUG
       Serial.print(F("Ten"));
       #endif
       break;
     case 11:
     case 23: 
-      ELEVEN; 
+      ELEVEN;
       #ifdef DEBUG
       Serial.print(F("Eleven"));
       #endif
       break;
     case 0:
-    case 12: 
+    case 12:
     case 24:
-      TWELVE; 
+      TWELVE;
       #ifdef DEBUG
       Serial.print(F("Twelve"));
       #endif
