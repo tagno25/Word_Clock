@@ -438,4 +438,3 @@ static int BlinkM_doFactoryReset()
   
 }
 
-
