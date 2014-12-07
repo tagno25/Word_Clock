@@ -6,6 +6,9 @@
 //Comment out to disable debug info (Should speed up execution and save space)
 #define DEBUG
 
+//Use enable to use LCD
+//#define LCD
+
 //Use I2C LCD instead of Shiftregister LCD
 #define I2CLCD
 
@@ -29,10 +32,12 @@
 #include "I2C_LED.h"
 #include <EEPROM.h> //Used to read and write the time to EEPROM
 
+#ifdef LCD
 #ifdef I2CLCD
 #include "OLedI2C.h"             // I2C LCD
 #else
 #include <LiquidCrystal595.h>    // LCD on shift register
+#endif
 #endif
 
 Timezone myTZ(124);
@@ -48,7 +53,11 @@ void setup()
   #endif
 
   Wire.begin();
+  
+  #ifdef LCD
   setupDisplay();
+  #endif
+  
   setupShiftRegister();
   setSyncProvider(RTC.get);   // the function to get the time from the RTC
   
@@ -62,7 +71,9 @@ void setup()
 
   if(timeStatus()!= timeSet) {
     eepromDateTime();
+    #ifdef LCD
     errorLCD("-----ERROR-----", " RTC not found ");
+    #endif
     Alarm.timerOnce(3600, saveHour);
   } else {
     saveHour();
@@ -75,8 +86,10 @@ void setup()
   Alarm.timerRepeat(30, alarm30sec); // run ledDisplayTime() every 30 seconds
 
   #ifdef DEBUG
+  #ifdef LCD
   Alarm.timerRepeat(60, alarm60sec); // run switchLCD() every 60 seconds
   Alarm.timerRepeat(20, alarm20sec); // run digitalClockDisplay() every 20 seconds
+  #endif
   #endif
   
   wordsoff();
@@ -87,8 +100,10 @@ int date[4];
 
 void loop()
 {
+  #ifdef LCD
   #ifdef DEBUG
     updateLCDClock();
+  #endif
   #endif
   
   Alarm.delay(100);// delay for 100ms and run alarms

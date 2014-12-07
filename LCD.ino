@@ -1,3 +1,4 @@
+#ifdef LCD
 #ifdef I2CLCD
 OLedI2C lcd;
 //OLedI2C lcd(ADDRESS);
@@ -83,4 +84,4 @@ void updateLCDClock()
   sLine += date[1] + sForwardSlash + date[2] + date[3];
   lcd.print(sLine);
 }
-
+#endif
