@@ -18,6 +18,8 @@ Setup with no LCD
 Color set by time of year/month/holiday
 
 Dimming pot on A3
-No setting time ?
+how to set time ?
+
+Make small instruction sheet for back.
 
 */
