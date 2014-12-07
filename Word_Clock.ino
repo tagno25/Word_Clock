@@ -26,15 +26,14 @@
 #include <DS1307RTC.h> //required for RTC
 #include <TimeAlarms.h> //Time Scheduling
 #include <Timezone.h>    //Required to set the timzone
+#include "I2C_LED.h"
+#include <EEPROM.h> //Used to read and write the time to EEPROM
 
 #ifdef I2CLCD
 #include "OLedI2C.h"             // I2C LCD
 #else
 #include <LiquidCrystal595.h>    // LCD on shift register
 #endif
-
-
-#include <EEPROM.h> //Used to read and write the time to EEPROM
 
 Timezone myTZ(124);
 TimeChangeRule *tcr;        //pointer to the time change rule, use to get TZ abbrev
@@ -72,15 +71,14 @@ void setup()
   setSyncInterval(3600); //Resync clock with RTC daily
   ledDisplayTime();
 
-  Alarm.alarmRepeat(1, 0, 0, saveDate);
+  Alarm.alarmRepeat(1, 0, 0, alarmHourly);//run alarmHourly() every hour
+  Alarm.timerRepeat(30, alarm30sec); // run ledDisplayTime() every 30 seconds
 
   #ifdef DEBUG
-  Alarm.timerRepeat(60, switchLCD);
-  Alarm.timerRepeat(20, digitalClockDisplay);
+  Alarm.timerRepeat(60, alarm60sec); // run switchLCD() every 60 seconds
+  Alarm.timerRepeat(20, alarm20sec); // run digitalClockDisplay() every 20 seconds
   #endif
   
-  Alarm.timerRepeat(30, ledDisplayTime);
-
   wordsoff();
 }
 
@@ -93,7 +91,7 @@ void loop()
     updateLCDClock();
   #endif
   
-  Alarm.delay(100);
+  Alarm.delay(100);// delay for 100ms and run alarms
 }
 
 
