@@ -22,4 +22,7 @@ how to set time ?
 
 Make small instruction sheet for back.
 
+
+Read brightness from eeprom
+read color pallet from eeprom?
 */
