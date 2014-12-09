@@ -1,32 +1,28 @@
-char Display1=0, Display2=0, Display3=0;
-
 // Display output pin assignments
-#define ITIS	Display1=Display1 | (1<<0)
-#define TWENTY 	Display1=Display1 | (1<<1)  
-#define QUARTER	Display1=Display1 | (1<<2)
-#define HALF	Display1=Display1 | (1<<3)
-#define MTEN	Display1=Display1 | (1<<4)
-#define MFIVE	Display1=Display1 | (1<<5)
-#define PAST	Display1=Display1 | (1<<6)
-#define TO	Display1=Display1 | (1<<7)
-
-#define TWELVE	Display2=Display2 | (1<<0)
-#define ONE	Display2=Display2 | (1<<1)
-#define TWO	Display2=Display2 | (1<<2)
-#define THREE	Display2=Display2 | (1<<3)
-#define FOUR	Display2=Display2 | (1<<4)
-#define HFIVE	Display2=Display2 | (1<<5)
-#define SIX	Display2=Display2 | (1<<6)
-#define SEVEN	Display2=Display2 | (1<<7)
-
-#define EIGHT	Display3=Display3 | (1<<0)
-#define NINE	Display3=Display3 | (1<<1)
-#define HTEN	Display3=Display3 | (1<<2)
-#define ELEVEN	Display3=Display3 | (1<<3)
-#define OCLOCK	Display3=Display3 | (1<<4)
-#define ARDUINO	Display3=Display3 | (1<<5)
-#define CONFIG	Display3=Display3 | (1<<6)
-#define MINUTES	Display3=Display3 | (1<<7)
+#define ITIS	Display[0] |= (1<<0)
+#define TWENTY 	Display[0] |= (1<<1)  
+#define QUARTER	Display[0] |= (1<<2)
+#define HALF	Display[0] |= (1<<3)
+#define MTEN	Display[0] |= (1<<4)
+#define MFIVE	Display[0] |= (1<<5)
+#define PAST	Display[0] |= (1<<6)
+#define TO	Display[0] |= (1<<7)
+#define TWELVE	Display[1] |= (1<<0)
+#define ONE	Display[1] |= (1<<1)
+#define TWO	Display[1] |= (1<<2)
+#define THREE	Display[1] |= (1<<3)
+#define FOUR	Display[1] |= (1<<4)
+#define HFIVE	Display[1] |= (1<<5)
+#define SIX	Display[1] |= (1<<6)
+#define SEVEN	Display[1] |= (1<<7)
+#define EIGHT	Display[2] |= (1<<0)
+#define NINE	Display[2] |= (1<<1)
+#define HTEN	Display[2] |= (1<<2)
+#define ELEVEN	Display[2] |= (1<<3)
+#define OCLOCK	Display[2] |= (1<<4)
+#define CONFIG	Display[2] |= (1<<5)
+#define TENS	Display[2] |= (1<<6)
+#define TIME	Display[2] |= (1<<7)
 
 void ledDisplayTime(){
   
@@ -287,13 +283,15 @@ void ledDisplayTime(){
   
   Serial.println(F(")"));
   #endif
+
   updateShiftRegister();
+
 }
 
 void wordsoff(void) {
-  Display1=0;
-  Display2=0;
-  Display3=0;
+  Display[0]=0;
+  Display[1]=0;
+  Display[2]=0;
 }
 
 void setupShiftRegister()
@@ -311,14 +309,27 @@ void setupShiftRegister()
 
 void updateShiftRegister()
 {
+  #ifdef DEBUG
+  Serial.print("Display[0] = B");
+  Serial.print(Display[0], BIN);
+  Serial.print("\n");
+  Serial.print("Display[1] = B");
+  Serial.print(Display[1], BIN);
+  Serial.print("\n");
+  Serial.print("Display[2] = B");
+  Serial.print(Display[2], BIN);
+  Serial.print("\n");
+  #endif
+  
   digitalWrite(LEDLACHPIN, LOW);
-  shiftOut(DATAPIN, CLOCKPIN, MSBFIRST, Display3);
-  shiftOut(DATAPIN, CLOCKPIN, MSBFIRST, Display2);
-  shiftOut(DATAPIN, CLOCKPIN, MSBFIRST, Display1);
+  shiftOut(DATAPIN, CLOCKPIN, MSBFIRST, Display[2]);
+  shiftOut(DATAPIN, CLOCKPIN, MSBFIRST, Display[1]);
+  shiftOut(DATAPIN, CLOCKPIN, MSBFIRST, Display[0]);
   digitalWrite(LEDLACHPIN, HIGH);
 }
 
 void setBrightness(byte brightness) // 0 to 255
 {
-  analogWrite(LEDOUTPUTENABLEPIN, 255-brightness);
+  LEDbrightness = brightness;
+  analogWrite(LEDOUTPUTENABLEPIN, 255-LEDbrightness);
 }

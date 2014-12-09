@@ -14,9 +14,9 @@
 
 //Define shift register pins
 #define DATAPIN 2
-#define CLOCKPIN 3
+#define CLOCKPIN 5
 #define LCDLACHPIN 4
-#define LEDLACHPIN 5
+#define LEDLACHPIN 3
 // use output enable for dimming
 #define LEDOUTPUTENABLEPIN 6
 
@@ -40,25 +40,43 @@
 #endif
 #endif
 
-Timezone myTZ(124);
+TimeChangeRule myDST = {"CDT", Second, Sun, Mar, 2, -300};    //Daylight time = UTC - 5 hours
+TimeChangeRule mySTD = {"CST", First, Sun, Nov, 2, -360};     //Standard time = UTC - 6 hours
+Timezone myTZ(myDST, mySTD);
 TimeChangeRule *tcr;        //pointer to the time change rule, use to get TZ abbrev
 time_t utc, local;
+byte LEDbrightness = 0x00;
+char Display[3]={0,0,0};
 
 void setup()
 { 
+  
   #ifdef DEBUG
   Serial.begin(9600);
   //delay(5000);
   //while (!Serial) ; // wait until Arduino Serial Monitor opens
   #endif
 
+  setupShiftRegister();
+  setBrightness(LEDbrightness);
+  wordsoff();
+  updateShiftRegister();
+
   Wire.begin();
+  
+  Wire.beginTransmission(0x09);
+  Wire.write('o');
+  Wire.write('C');
+  Wire.write(0xff);
+  Wire.write(0xff);
+  Wire.write(0xff);
+  Wire.endTransmission();
+
   
   #ifdef LCD
   setupDisplay();
   #endif
   
-  setupShiftRegister();
   setSyncProvider(RTC.get);   // the function to get the time from the RTC
   
   #ifdef DEBUG
@@ -80,16 +98,15 @@ void setup()
   }
 
   setSyncInterval(3600); //Resync clock with RTC daily
+  setBrightness(64);
   ledDisplayTime();
 
   Alarm.alarmRepeat(1, 0, 0, alarmHourly);//run alarmHourly() every hour
   Alarm.timerRepeat(30, alarm30sec); // run ledDisplayTime() every 30 seconds
 
   #ifdef DEBUG
-  #ifdef LCD
   Alarm.timerRepeat(60, alarm60sec); // run switchLCD() every 60 seconds
   Alarm.timerRepeat(20, alarm20sec); // run digitalClockDisplay() every 20 seconds
-  #endif
   #endif
   
   wordsoff();
@@ -100,8 +117,8 @@ int date[4];
 
 void loop()
 {
-  #ifdef LCD
   #ifdef DEBUG
+  #ifdef LCD
     updateLCDClock();
   #endif
   #endif
