@@ -20,6 +20,7 @@ void alarm60sec(){
   #ifdef LCD
   switchLCD(); //change LCD display State
   #endif
+  randomColor();
 }
 
 #endif

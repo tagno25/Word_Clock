@@ -50,3 +50,12 @@ void birthStoneColor() {
   }
 }
 
+void randomColor() {   
+  Wire.beginTransmission(0x09);
+  Wire.write('o');
+  Wire.write('C');
+  Wire.write(0xff);
+  Wire.write(0xff);
+  Wire.write(0xff);
+  Wire.endTransmission();
+}
