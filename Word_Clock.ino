@@ -15,7 +15,7 @@
 //Define shift register pins
 #define DATAPIN 2
 #define CLOCKPIN 5
-#define LCDLACHPIN 4
+#define LCDLACHPIN 4 //broken in Rev1 board
 #define LEDLACHPIN 3
 // use output enable for dimming
 #define LEDOUTPUTENABLEPIN 6
