@@ -308,19 +308,7 @@ void setupShiftRegister()
 }
 
 void updateShiftRegister()
-{
-  #ifdef DEBUG
-  Serial.print("Display[0] = B");
-  Serial.print(Display[0], BIN);
-  Serial.print("\n");
-  Serial.print("Display[1] = B");
-  Serial.print(Display[1], BIN);
-  Serial.print("\n");
-  Serial.print("Display[2] = B");
-  Serial.print(Display[2], BIN);
-  Serial.print("\n");
-  #endif
-  
+{  
   digitalWrite(LEDLACHPIN, LOW);
   shiftOut(DATAPIN, CLOCKPIN, MSBFIRST, Display[2]);
   shiftOut(DATAPIN, CLOCKPIN, MSBFIRST, Display[1]);
