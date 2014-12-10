@@ -45,7 +45,7 @@ TimeChangeRule mySTD = {"CST", First, Sun, Nov, 2, -360};     //Standard time = 
 Timezone myTZ(myDST, mySTD);
 TimeChangeRule *tcr;        //pointer to the time change rule, use to get TZ abbrev
 time_t utc, local;
-byte LEDbrightness = 0x00;
+byte LEDbrightness = EEPROM.read(4);
 char Display[3]={0,0,0};
 
 void setup()
@@ -98,7 +98,6 @@ void setup()
   }
 
   setSyncInterval(3600); //Resync clock with RTC daily
-  setBrightness(64);
   ledDisplayTime();
 
   Alarm.alarmRepeat(1, 0, 0, alarmHourly);//run alarmHourly() every hour
