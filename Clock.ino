@@ -21,8 +21,8 @@
 #define ELEVEN	Display[2] |= (1<<3)
 #define OCLOCK	Display[2] |= (1<<4)
 #define CONFIG	Display[2] |= (1<<5)
-#define TENS	Display[2] |= (1<<6)
-#define TIME	Display[2] |= (1<<7)
+#define TIME	Display[2] |= (1<<6)
+#define TENS	Display[2] |= (1<<7)
 
 void ledDisplayTime(){
   
@@ -285,7 +285,7 @@ void ledDisplayTime(){
   #endif
 
   updateShiftRegister();
-
+  wordsoff();
 }
 
 void wordsoff(void) {

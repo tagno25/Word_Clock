@@ -20,9 +20,9 @@
 // use output enable for dimming
 #define LEDOUTPUTENABLEPIN 6
 
-#define BUTTON1 7
-#define BUTTON2 8
-#define BUTTON3 9
+#define BUTTON1 10
+#define BUTTON2 A0
+#define BUTTON3 A3
 
 #include <Wire.h> //required for DS1307RTC.h
 #include <Time.h> //Required for timekeeping
@@ -47,6 +47,9 @@ TimeChangeRule *tcr;        //pointer to the time change rule, use to get TZ abb
 time_t utc, local;
 byte LEDbrightness = EEPROM.read(4);
 char Display[3]={0,0,0};
+long previousMillis = 0;
+long menuMillis1 = 0;
+unsigned long currentMillis = millis();
 
 void setup()
 { 
@@ -56,6 +59,10 @@ void setup()
   //delay(5000);
   //while (!Serial) ; // wait until Arduino Serial Monitor opens
   #endif
+  
+  pinMode(BUTTON1, INPUT_PULLUP);  
+  pinMode(BUTTON2, INPUT_PULLUP);  
+  pinMode(BUTTON3, INPUT_PULLUP);  
 
   setupShiftRegister();
   setBrightness(LEDbrightness);
@@ -98,8 +105,7 @@ void setup()
   }
 
   setSyncInterval(3600); //Resync clock with RTC daily
-  ledDisplayTime();
-
+  
   Alarm.alarmRepeat(1, 0, 0, alarmHourly);//run alarmHourly() every hour
   Alarm.timerRepeat(30, alarm30sec); // run ledDisplayTime() every 30 seconds
 
@@ -108,7 +114,7 @@ void setup()
   Alarm.timerRepeat(20, alarm20sec); // run digitalClockDisplay() every 20 seconds
   #endif
   
-  wordsoff();
+  ledDisplayTime();
 }
 
 int time[6];
@@ -123,6 +129,15 @@ void loop()
   #endif
   
   Alarm.delay(100);// delay for 100ms and run alarms
+  currentMillis = millis();
+  if (digitalRead(BUTTON1)==LOW){
+    if(currentMillis - menuMillis1 > 6000) {//reset menu timer ot current millis when more than 6000 different
+      menuMillis1 = currentMillis;
+    } else if(currentMillis - menuMillis1 > 4000) {//enter menu when timer is more than 4000 different from current
+      menuMillis1 = currentMillis;
+      configMenu();
+    }
+  }
 }
 
 
@@ -137,6 +152,7 @@ void loop()
 //http://learn.adafruit.com/adafruit-arduino-lesson-4-eight-leds/overview
 //http://arduino.cc/en/Tutorial/ShiftOut
 //https://github.com/JChristensen/Timezone/
+//http://www.arduino.cc/en/Tutorial/BlinkWithoutDelay
 //
 //------------------------------------------
 // other info
