@@ -319,8 +319,8 @@ void updateShiftRegister()
 void setBrightness()
 {
   if (hour(local)<=7||hour(local)>=20){
-    analogWrite(LEDOUTPUTENABLEPIN, EEPROM.read(15));
+    analogWrite(LEDOUTPUTENABLEPIN, 255-EEPROM.read(15));
   } else {
-    analogWrite(LEDOUTPUTENABLEPIN, EEPROM.read(14));
+    analogWrite(LEDOUTPUTENABLEPIN, 255-EEPROM.read(14));
   }
 }

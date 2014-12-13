@@ -43,7 +43,7 @@ typedef struct _blinkm_script_line {
 //
 // each call to twi_writeTo() should return 0 if device is there
 // or other value (usually 2) if nothing is at that address
-// 
+//
 static void BlinkM_scanI2CBus(byte from, byte to, 
                               void(*callback)(byte add, byte result) ) 
 {
@@ -69,60 +69,6 @@ static int8_t BlinkM_findFirstI2CDevice()
 }
 
 
-// sends a generic command
-static void BlinkM_sendCmd(byte addr, byte* cmd, int cmdlen)
-{
-  Wire.beginTransmission(addr);
-  for( byte i=0; i<cmdlen; i++) 
-    Wire.write(cmd[i]);
-  Wire.endTransmission();
-}
-
-// receives generic data
-// returns 0 on success, and -1 if no data available
-// note: responsiblity of caller to know how many bytes to expect
-static int BlinkM_receiveBytes(byte addr, byte* resp, byte len)
-{
-  Wire.requestFrom(addr, len);
-  if( Wire.available() ) {
-    for( int i=0; i<len; i++) 
-      resp[i] = Wire.read();
-    return 0;
-  }
-  return -1;
-}
-
-// Sets the I2C address of the BlinkM.  
-// Uses "general call" broadcast address
-static void BlinkM_setAddress(byte newaddress)
-{
-  Wire.beginTransmission(0x00);  // general call (broadcast address)
-  Wire.write('A');
-  Wire.write(newaddress);
-  Wire.write(0xD0);
-  Wire.write(0x0D);  // dood!
-  Wire.write(newaddress);
-  Wire.endTransmission();
-  delay(50); // just in case
-}
-
-
-// Gets the I2C address of the BlinKM
-// Kind of redundant when sent to a specific address
-// but uses to verify BlinkM communication
-static int BlinkM_getAddress(byte addr)
-{
-  Wire.beginTransmission(addr);
-  Wire.write('a');
-  Wire.endTransmission();
-  Wire.requestFrom(addr, (byte)1);  // general call
-  if( Wire.available() ) {
-    byte b = Wire.read();
-    return b;
-  }
-  return -1;
-}
-
 // Gets the BlinkM firmware version
 static int BlinkM_getVersion(byte addr)
 {
@@ -138,23 +84,6 @@ static int BlinkM_getVersion(byte addr)
   return -1;
 }
 
-// Demonstrates how to verify you're talking to a BlinkM 
-// and that you know its address
-static int BlinkM_checkAddress(byte addr)
-{
-  //Serial.print("Checking BlinkM address...");
-  int b = BlinkM_getAddress(addr);
-  if( b==-1 ) {
-    //Serial.println("No response, that's not good");
-    return -1;  // no response
-  } 
-  //Serial.print("received addr: 0x");
-  //Serial.print(b,HEX);
-  if( b != addr )
-    return 1; // error, addr mismatch 
-  else 
-    return 0; // match, everything okay
-}
 
 // Sets the speed of fading between colors.  
 // Higher numbers means faster fading, 255 == instantaneous fading
@@ -188,16 +117,6 @@ static void BlinkM_fadeToRGB(byte addr, byte red, byte grn, byte blu)
   Wire.endTransmission();
 }
 
-// Fades to an HSB color
-static void BlinkM_fadeToHSB(byte addr, byte hue, byte saturation, byte brightness)
-{
-  Wire.beginTransmission(addr);
-  Wire.write('h');
-  Wire.write(hue);
-  Wire.write(saturation);
-  Wire.write(brightness);
-  Wire.endTransmission();
-}
 
 // Sets an RGB color immediately
 static void BlinkM_setRGB(byte addr, byte red, byte grn, byte blu)
@@ -220,30 +139,7 @@ static void BlinkM_fadeToRandomRGB(byte addr, byte rrnd, byte grnd, byte brnd)
   Wire.write(brnd);
   Wire.endTransmission();
 }
-// Fades to a random HSB color
-static void BlinkM_fadeToRandomHSB(byte addr, byte hrnd, byte srnd, byte brnd)
-{
-  Wire.beginTransmission(addr);
-  Wire.write('H');
-  Wire.write(hrnd);
-  Wire.write(srnd);
-  Wire.write(brnd);
-  Wire.endTransmission();
-}
 
-//
-static void BlinkM_getRGBColor(byte addr, byte* r, byte* g, byte* b)
-{
-  Wire.beginTransmission(addr);
-  Wire.write('g');
-  Wire.endTransmission();
-  Wire.requestFrom(addr, (byte)3);
-  if( Wire.available() ) {
-    *r = Wire.read();
-    *g = Wire.read();
-    *b = Wire.read();
-  }
-}
 
 //
 static void BlinkM_playScript(byte addr, byte script_id, byte reps, byte pos)
@@ -364,44 +260,10 @@ static void BlinkM_setStartupParamsDefault( byte addr )
   BlinkM_setStartupParams( addr, 0x01, 0x00, 0x00, 0x08, 0x00 );
 }
 
-// Gets digital inputs of the BlinkM
-// returns -1 on failure
-static int BlinkM_getInputsO(byte addr)
-{
-  Wire.beginTransmission(addr);
-  Wire.write('i');
-  Wire.endTransmission();
-  Wire.requestFrom(addr, (byte)1);
-  if( Wire.available() ) {
-    byte b = Wire.read();
-    return b; 
-  }
-  return -1;
-}
-
-// Gets digital inputs of the BlinkM
-// stores them in passed in array
-// returns -1 on failure
-static int BlinkM_getInputs(byte addr, byte inputs[])
-{
-  Wire.beginTransmission(addr);
-  Wire.write('i');
-  Wire.endTransmission();
-  Wire.requestFrom(addr, (byte)4);
-  while( Wire.available() < 4 ) ; // FIXME: wait until we get 4 bytes
-    
-  inputs[0] = Wire.read();
-  inputs[1] = Wire.read();
-  inputs[2] = Wire.read();
-  inputs[3] = Wire.read();
-
-  return 0;
-}
 
 //
 static int BlinkM_doFactoryReset() 
 {
-  BlinkM_setAddress( 0x09 );
 
   delay(30);
 

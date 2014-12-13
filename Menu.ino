@@ -2,7 +2,22 @@
 #define CONFIG	Display[2] |= (1<<5)
 #define TIME	Display[2] |= (1<<6)
 #define TENS	Display[2] |= (1<<7)
+
+#define TWELVE	Display[1] |= (1<<0)
+#define ONE	Display[1] |= (1<<1)
+#define TWO	Display[1] |= (1<<2)
+#define THREE	Display[1] |= (1<<3)
+#define FOUR	Display[1] |= (1<<4)
+#define HFIVE	Display[1] |= (1<<5)
+#define SIX	Display[1] |= (1<<6)
+#define SEVEN	Display[1] |= (1<<7)
+#define EIGHT	Display[2] |= (1<<0)
+#define NINE	Display[2] |= (1<<1)
+#define HTEN	Display[2] |= (1<<2)
+#define ELEVEN	Display[2] |= (1<<3)
+#define OCLOCK	Display[2] |= (1<<4)
 */
+
 
 void configMenu(){
   #ifdef DEBUG
@@ -15,7 +30,7 @@ void configMenu(){
   updateShiftRegister();
   long menuMillis2 = 0;
   long menuMillis3 = 0;
-  byte option = 1;
+  byte option = loadOption(menu);
 
   menuMillis1 = currentMillis;
 
@@ -53,6 +68,7 @@ void configMenu(){
         //change option + when timer is more than 200 different from current
         menuMillis2 = currentMillis;
         option=option+1;
+        option=boundOption(menu,option);//check option boundry and rollover
       }
     }
 
@@ -64,10 +80,87 @@ void configMenu(){
         //change option - when timer is more than 200 different from current
         menuMillis3 = currentMillis;
         option=option-1;
+        option=boundOption(menu,option);//check option boundry and rollover
       }
     }
 
-    boundOption(menu);//check option boundry and rollover
+    
+    Display[1]=0;
+    for (byte n=0; n<5; ++n) {
+      Display[2] &= ~(1<<n);
+    }
+    CONFIG;
+
+    if(menu==1||menu>=7){
+      switch (option){
+        case 12:
+          if(menu==7){
+            OCLOCK;
+          } else {
+            TWELVE;
+          }
+        case 0:
+          TWELVE;
+          break;
+        case 13:
+          OCLOCK;
+        case 1:
+          ONE;
+          break;
+        case 14:
+          OCLOCK;
+        case 2:
+          TWO;
+          break;
+        case 15:
+          OCLOCK;
+        case 3:
+          THREE;
+          break;
+        case 16:
+          OCLOCK;
+        case 4:
+          FOUR;
+          break;
+        case 17:
+          OCLOCK;
+        case 5:
+          HFIVE;
+          break;
+        case 18:
+          OCLOCK;
+        case 6:
+          SIX;
+          break;
+        case 19:
+          OCLOCK;
+        case 7:
+          SEVEN;
+          break;
+        case 20:
+          OCLOCK;
+        case 8:
+          EIGHT;
+          break;
+        case 21:
+          OCLOCK;
+        case 9:
+          NINE;
+          break;
+        case 22:
+          OCLOCK;
+        case 10:
+          HTEN;
+          break;
+        case 23:
+          OCLOCK;
+        case 11:
+          ELEVEN;
+          break;
+        default:
+          break;
+      }
+    }
 
     switch (menu) {
       case 1:
@@ -81,8 +174,9 @@ void configMenu(){
         #ifdef DEBUG
         Serial.println(F("Menu 1"));
         #endif
+/*        
         Display[2] |= (1<<5);//Menu LED on
-        updateShiftRegister();
+*/        
         break;
       case 2:
         //Color
@@ -93,6 +187,10 @@ void configMenu(){
         if (loadOption(1)!=1) {
           //skip to Brightness
           menu = 5;
+        } else {
+          Display[1]=255;
+
+          BlinkM_setRGB(0x09, (option*8)-1, EEPROM.read(12), EEPROM.read(13));
         }
         break;
       case 3:
@@ -104,6 +202,11 @@ void configMenu(){
         if (loadOption(1)!=1) {
           //skip to Brightness
           menu = 5;
+        } else {
+          Display[1]=255;
+          
+
+          BlinkM_setRGB(0x09, EEPROM.read(11), (option*8)-1, EEPROM.read(13));
         }
         break;
       case 4:
@@ -115,6 +218,10 @@ void configMenu(){
         if (loadOption(1)!=1) {
           //skip to Brightness
           menu = 5;
+        } else {
+          Display[1]=255;
+
+          BlinkM_setRGB(0x09, EEPROM.read(11), EEPROM.read(12), (option*8)-1);
         }
         break;
         case 5:
@@ -124,11 +231,14 @@ void configMenu(){
         #ifdef DEBUG
         Serial.println(F("Menu 5"));
         #endif
+/*        
         if(currentMillis - previousMillis > 500) {
           previousMillis = currentMillis;
           Display[2] ^= (1<<5); //Menu LED toggle
-          updateShiftRegister();
         }
+*/        
+        
+        Display[1]=255;
         break;
       case 6:
         //Brightness Night
@@ -137,21 +247,24 @@ void configMenu(){
         #ifdef DEBUG
         Serial.println(F("Menu 6"));
         #endif
+/*        
         Display[2] |= (1<<6);//Time LED on
-        updateShiftRegister();
+*/        
+        
+        Display[1]=255;
         break;
       case 7:
         //Time setup
         // Hour
-        // blink number for PM
         #ifdef DEBUG
         Serial.println(F("Menu 7"));
         #endif
+/*        
         if(currentMillis - previousMillis > 500) {
           previousMillis = currentMillis;
           Display[2] ^= (1<<6);//Time LED toggle
-          updateShiftRegister();
         }
+*/
         break;
       case 8:
         //Time setup
@@ -210,6 +323,9 @@ void configMenu(){
         break;
     }
     
+    setBrightness();
+    updateShiftRegister();
+    
     #ifdef DEBUG
     Serial.print(F("Option: "));
     Serial.println(option);
@@ -224,13 +340,15 @@ void configMenu(){
   //reset shift register data then display time
   wordsoff();
   ledDisplayTime();
+  setBrightness();
   updateShiftRegister();
 }
 
 void saveOption(byte menuNumber, byte optionValue){
-  utc = now();
-  local = myTZ.toLocal(utc, &tcr);
-
+  if (menuNumber>=7){
+    utc = now();
+    local = myTZ.toLocal(utc, &tcr);
+  }
   switch (menuNumber) {
     case 1:
       //Color Palette
@@ -238,55 +356,67 @@ void saveOption(byte menuNumber, byte optionValue){
       break;
     case 2:
       //Color (Red)
-      return(EEPROM.write(11, optionValue));
+      return(EEPROM.write(11, (optionValue*8)-1));
       break;
     case 3:
       //Color (Green)
-      return(EEPROM.write(12, optionValue));
+      return(EEPROM.write(12, (optionValue*8)-1));
       break;
     case 4:
       //Color (Blue)
-      return(EEPROM.write(13, optionValue));
+      return(EEPROM.write(13, (optionValue*8)-1));
       break;
     case 5:
       //Brightness Day
-      return(EEPROM.write(14, optionValue));
+      return(EEPROM.write(14, (optionValue*8)-1));
       break;
     case 6:
       //Brightness Night
-      return(EEPROM.write(15, optionValue));
+      return(EEPROM.write(15, (optionValue*8)-1));
       break;
     case 7:
       //Time setup
       // Hour
+      if (myTZ.locIsDST(local)){
+        setTime(optionValue+5, minute(), second(), day(), month(), year());
+      } else {
+        setTime(optionValue+6, minute(), second(), day(), month(), year());
+      }
       break;
     case 8:
       //Time setup
       // Minutes (Tens place)
+      setTime(hour(), (optionValue*10), second(), day(), month(), year());
       break;
     case 9:
       //Time setup
       // Minutes (Ones place)
+      setTime(hour(), (minute()+optionValue), second(), day(), month(), year());
       break;
     case 10:
       //Date setup
       // Month
+      setTime(hour(), minute(), second(), day(), optionValue, year());
       break;
     case 11:
       //Date setup
       // Day (Tens place)
+      setTime(hour(), minute(), second(), (optionValue*10), month(), year());
       break;
     case 12:
       //Date setup
       // Day (Ones place)
+      setTime(hour(), minute(), second(), (day(local)+optionValue), month(), year());
       break;
     case 13:
       //Date setup
       // Year (Tens place)
+      setTime(hour(), minute(), second(), day(), month(), (2000+(optionValue*10)));
       break;
     case 14:
       //Date setup
       // Year (Ones place)
+      setTime(hour(), minute(), second(), day(), month(), (year()+optionValue));
       break;
     default:
       break;
@@ -294,8 +424,10 @@ void saveOption(byte menuNumber, byte optionValue){
 }
 
 byte loadOption(byte menuNumber){
-  utc = now();
-  local = myTZ.toLocal(utc, &tcr);
+  if (menuNumber>=7){
+    utc = now();
+    local = myTZ.toLocal(utc, &tcr);
+  }
 
   switch (menuNumber) {
     case 1:
@@ -304,23 +436,23 @@ byte loadOption(byte menuNumber){
       break;
     case 2:
       //Color (Red)
-      return(EEPROM.read(11));
+      return((EEPROM.read(11)-1)/8);
       break;
     case 3:
       //Color (Green)
-      return(EEPROM.read(12));
+      return((EEPROM.read(12)-1)/8);
       break;
     case 4:
       //Color (Blue)
-      return(EEPROM.read(13));
+      return((EEPROM.read(13)-1)/8);
       break;
     case 5:
       //Brightness Day
-      return(EEPROM.read(14));
+      return((EEPROM.read(14)-1)/8);
       break;
     case 6:
       //Brightness Night
-      return(EEPROM.read(15));
+      return((EEPROM.read(15)-1)/8);
       break;
     case 7:
       //Time setup
@@ -368,66 +500,130 @@ byte loadOption(byte menuNumber){
   }
 }
 
-byte boundOption(byte menuNumber){
+byte boundOption(byte menuNumber, byte optionValue){
   switch (menuNumber) {
     case 1:
     //Color
-    // show what would be the curent color
-    // use 1-12 LED to show pre-configured
-    // #1 Custom (saved to EEPROM)
-    // #2 Random Color (changes every hour) (change every 30 seconds in config mode)
-    // #3 Holiday Color
-    // #4 Birthstone Color
+      if(optionValue>200||optionValue==0){
+        return (4);
+      } else if(optionValue>4){
+        return (1);
+      } else {
+        return(optionValue);
+      }
     break;
     case 2:
-      //Color
-      // Red (if preselected #1)
-      break;
+      //Color (Red)
     case 3:
-      //Color
-      // Green (if preselected #1)
-      break;
+      //Color (Green)
     case 4:
-      //Color
-      // Blue (if preselected #1)
-      break;
+      //Color (Blue)
     case 5:
       //Brightness Day
-      break;
     case 6:
       //Brightness Night
+      if(optionValue>200){
+        analogWrite(LEDOUTPUTENABLEPIN, 0);
+        return (32);
+      } else if(optionValue>32){
+        analogWrite(LEDOUTPUTENABLEPIN, 255);
+        return (0);
+      } else {
+        analogWrite(LEDOUTPUTENABLEPIN, (255-(optionValue*8)));
+        return(optionValue);
+      }
       break;
     case 7:
       //Time setup
       // Hour
+      if(optionValue>200){
+        return (23);
+      } else if(optionValue>23){
+        return (0);
+      } else {
+        return(optionValue);
+      }
       break;
     case 8:
       //Time setup
       // Minutes (Tens place)
+      if(optionValue>200){
+        return (5);
+      } else if(optionValue>5){
+        return (0);
+      } else {
+        return(optionValue);
+      }
       break;
     case 9:
       //Time setup
       // Minutes (Ones place)
+      if(optionValue>200){
+        return (9);
+      } else if(optionValue>9){
+        return (0);
+      } else {
+        return(optionValue);
+      }
       break;
     case 10:
       //Date setup
       // Month
+      if(optionValue>200||optionValue==0){
+        return (12);
+      } else if(optionValue>12){
+        return (1);
+      } else {
+        return(optionValue);
+      }
       break;
     case 11:
       //Date setup
       // Day (Tens place)
+      if(optionValue>200){
+        return (3);
+      } else if(optionValue>3){
+        return (0);
+      } else {
+        return(optionValue);
+      }
       break;
     case 12:
       //Date setup
       // Day (Ones place)
+      if(optionValue>200 && (day(local)/10)==3){
+        return (1); //wrap to 1 if greater than 200 and a 3X day
+      } else if(optionValue>200||(optionValue==0 && (day(local)/10)==0)){
+        return (9); //wrap to 9 if greater than 200 or (equal to 0 and a 0X day) 
+      } else if(optionValue>9 && (day(local)/10)==0){
+        return (1); //wrap to 1 if greater than 9 and a 0X day
+      } else if(optionValue>9||(optionValue>1 && (day(local)/10)==3)){
+        return (0); //wrap to 0 if greater than 9 or (grearter than 1 and a 3X day)
+      } else {
+        return(optionValue);
+      }
       break;
     case 13:
       //Date setup
       // Year (Tens place)
+      if(optionValue>200){
+        return (9);
+      } else if(optionValue>9){
+        return (0);
+      } else {
+        return(optionValue);
+      }
       break;
     case 14:
       //Date setup
       // Year (Ones place)
+      if(optionValue>200){
+        return (9);
+      } else if(optionValue>9){
+        return (0);
+      } else {
+        return(optionValue);
+      }
       break;
     default:
       return(1);

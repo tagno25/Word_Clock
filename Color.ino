@@ -9,18 +9,13 @@ void setColor() {
       #ifdef DEBUG
       Serial.println(F("Custom Color"));
       #endif
-      Wire.beginTransmission(0x09);
-      Wire.write('c');
-      Wire.write(EEPROM.read(11));
-      Wire.write(EEPROM.read(12));
-      Wire.write(EEPROM.read(13));
-      Wire.endTransmission();
+      BlinkM_fadeToRGB(0x09, EEPROM.read(11), EEPROM.read(12), EEPROM.read(13));
       break;
     case 2:
       #ifdef DEBUG
       Serial.println(F("Random Color"));
       #endif
-      randomColor();
+      BlinkM_fadeToRandomRGB(0x09, 255, 255, 255);
       break;
     case 3:
       #ifdef DEBUG
@@ -88,13 +83,4 @@ void birthStoneColor() {
     default:
       break;
   }
-}
-
-void randomColor() {   
-  Wire.beginTransmission(0x09);
-  Wire.write('C');
-  Wire.write(0xff);
-  Wire.write(0xff);
-  Wire.write(0xff);
-  Wire.endTransmission();
 }

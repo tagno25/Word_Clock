@@ -70,9 +70,8 @@ void setup()
 
   Wire.begin();
   
-  Wire.beginTransmission(0x09);
-  Wire.write('o');//turn off color script
-  Wire.endTransmission();
+  BlinkM_stopScript(0x09);
+  BlinkM_setFadeSpeed(0x09,128);
 
   setColor(); //Update the color
   
