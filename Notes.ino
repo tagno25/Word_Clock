@@ -22,7 +22,15 @@ how to set time ?
 
 Make small instruction sheet for back.
 
+o'Clock is 0 in menu
 
-Read brightness from eeprom
-read color pallet from eeprom?
+config in EEPROM 10+
+EEPROM 10: Color Palette
+EEPROM 11: Red
+EEPROM 12: Green
+EEPROM 13: Blue
+EEPROM 14: Day Brightness
+EEPROM 15: Night Brightness
+
+
 */

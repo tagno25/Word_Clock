@@ -45,7 +45,6 @@ TimeChangeRule mySTD = {"CST", First, Sun, Nov, 2, -360};     //Standard time = 
 Timezone myTZ(myDST, mySTD);
 TimeChangeRule *tcr;        //pointer to the time change rule, use to get TZ abbrev
 time_t utc, local;
-byte LEDbrightness = EEPROM.read(4);
 char Display[3]={0,0,0};
 long previousMillis = 0;
 long menuMillis1 = 0;
@@ -65,20 +64,17 @@ void setup()
   pinMode(BUTTON3, INPUT_PULLUP);  
 
   setupShiftRegister();
-  setBrightness(LEDbrightness);
+  analogWrite(LEDOUTPUTENABLEPIN, 0);
   wordsoff();
   updateShiftRegister();
 
   Wire.begin();
   
   Wire.beginTransmission(0x09);
-  Wire.write('o');
-  Wire.write('C');
-  Wire.write(0xff);
-  Wire.write(0xff);
-  Wire.write(0xff);
+  Wire.write('o');//turn off color script
   Wire.endTransmission();
 
+  setColor(); //Update the color
   
   #ifdef LCD
   setupDisplay();
@@ -115,6 +111,7 @@ void setup()
   #endif
   
   ledDisplayTime();
+  setBrightness();
 }
 
 int time[6];

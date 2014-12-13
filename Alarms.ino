@@ -2,6 +2,8 @@
 
 void alarmHourly(){
   saveDate();
+  setBrightness();  //update the brightness
+  setColor(); //Update the color
 }
 
 void alarm30sec(){
@@ -20,7 +22,6 @@ void alarm60sec(){
   #ifdef LCD
   switchLCD(); //change LCD display State
   #endif
-  randomColor();
 }
 
 #endif

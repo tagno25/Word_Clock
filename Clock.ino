@@ -316,8 +316,11 @@ void updateShiftRegister()
   digitalWrite(LEDLACHPIN, HIGH);
 }
 
-void setBrightness(byte brightness) // 0 to 255
+void setBrightness()
 {
-  LEDbrightness = brightness;
-  analogWrite(LEDOUTPUTENABLEPIN, 255-LEDbrightness);
+  if (hour(local)<=7||hour(local)>=20){
+    analogWrite(LEDOUTPUTENABLEPIN, EEPROM.read(15));
+  } else {
+    analogWrite(LEDOUTPUTENABLEPIN, EEPROM.read(14));
+  }
 }

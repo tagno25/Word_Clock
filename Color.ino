@@ -1,3 +1,43 @@
+void setColor() {
+  //Color
+  // #1 Custom (saved to EEPROM)
+  // #2 Random Color (changes every hour) (change every 30 seconds in config mode)
+  // #3 Holiday Color
+  // #4 Birthstone Color
+  switch (EEPROM.read(10)) {
+    case 1:
+      #ifdef DEBUG
+      Serial.println(F("Custom Color"));
+      #endif
+      Wire.beginTransmission(0x09);
+      Wire.write('c');
+      Wire.write(EEPROM.read(11));
+      Wire.write(EEPROM.read(12));
+      Wire.write(EEPROM.read(13));
+      Wire.endTransmission();
+      break;
+    case 2:
+      #ifdef DEBUG
+      Serial.println(F("Random Color"));
+      #endif
+      randomColor();
+      break;
+    case 3:
+      #ifdef DEBUG
+      Serial.println(F("Holiday Color"));
+      #endif
+      holidayColor();
+      break;
+    case 4:
+      #ifdef DEBUG
+      Serial.println(F("Birth Stone Color"));
+      #endif
+      birthStoneColor();
+      break;
+    default:
+      break;
+  }
+}
 
 void holidayColor() {
   switch (month()) {
@@ -52,7 +92,6 @@ void birthStoneColor() {
 
 void randomColor() {   
   Wire.beginTransmission(0x09);
-  Wire.write('o');
   Wire.write('C');
   Wire.write(0xff);
   Wire.write(0xff);
