@@ -27,16 +27,16 @@ void configMenu(){
     }
     
     if (digitalRead(BUTTON1)==LOW){
-      if(currentMillis - menuMillis1 > 3000) {
-        //reset menu timer to current millis when more than 3000 different
+      if(currentMillis - menuMillis1 > 1000) {
+        //reset menu timer to current millis when more than 1000 different
         menuMillis1 = currentMillis;
-      } else if(currentMillis - menuMillis1 > 250) {
-        //change menu when timer is more than 500 different from current
+      } else if(currentMillis - menuMillis1 > 400) {
+        //change menu when timer is more than 400 different from current
         
         while (digitalRead(BUTTON1)==LOW){
           //don't change menus until button is released
           currentMillis = millis();
-          if(currentMillis - previousMillis > 500) {
+          if(currentMillis - previousMillis > BLINKLENGHT) {
             previousMillis = currentMillis;
             Display[0] ^= (1<<0); //Menu LED toggle
           }
@@ -50,10 +50,10 @@ void configMenu(){
     }
 
     if (digitalRead(BUTTON2)==LOW){
-      if(currentMillis - menuMillis2 > 3000) {
-        //reset timer to current millis when more than 3000 different
+      if(currentMillis - menuMillis2 > 1000) {
+        //reset timer to current millis when more than 1000 different
         menuMillis2 = currentMillis;
-      } else if(currentMillis - menuMillis2 > 150) {
+      } else if(currentMillis - menuMillis2 > 200) {
         //change option + when timer is more than 200 different from current
         menuMillis2 = currentMillis;
         option=option+1;
@@ -62,10 +62,10 @@ void configMenu(){
     }
 
     if (digitalRead(BUTTON3)==LOW){
-      if(currentMillis - menuMillis3 > 3000) {
-        //reset menu timer to current millis more than 3000 different
+      if(currentMillis - menuMillis3 > 1000) {
+        //reset menu timer to current millis more than 1000 different
         menuMillis3 = currentMillis;
-      } else if(currentMillis - menuMillis1 > 150) {
+      } else if(currentMillis - menuMillis3 > 200) {
         //change option - when timer is more than 200 different from current
         menuMillis3 = currentMillis;
         option=option-1;
@@ -78,7 +78,7 @@ void configMenu(){
     Display[0] &= ~(1<<1);
     Display[0] &= ~(1<<4);
     Display[1]=0;
-    for (byte n=0; n<5; ++n) {
+    for (byte n=0; n<=6; ++n) {
       Display[2] &= ~(1<<n);
     }
     CONFIG;
@@ -175,18 +175,13 @@ void configMenu(){
     switch (menu) {
       case 1:
         //Color
-        // show what would be the curent color
-        // use 1-12 LED to show pre-configured
         // #1 Custom (saved to EEPROM)
         // #2 Random Color (changes every hour) (change every 30 seconds in config mode)
         // #3 Holiday Color
-        // #4 Birthstone Color
         #ifdef DEBUG
         Serial.println(F("Menu 1: Color Palette"));
         #endif
-/*        
-        Display[2] |= (1<<5);//Menu LED on
-*/        
+        TO;
         break;
       case 2:
         //Color
@@ -198,6 +193,10 @@ void configMenu(){
           #ifdef DEBUG
           Serial.println(F("Menu 2: Red"));
           #endif
+          if(currentMillis - previousMillis > BLINKLENGHT) {
+            previousMillis = currentMillis;
+            Display[2] ^= (1<<7);//"To" LED blink
+          }
           Display[1]=255;
           BlinkM_setRGB(0x09, (option*8)-1, EEPROM.read(12), EEPROM.read(13));
         }
@@ -212,8 +211,11 @@ void configMenu(){
           #ifdef DEBUG
           Serial.println(F("Menu 3: Green"));
           #endif
+          if(currentMillis - previousMillis > BLINKLENGHT) {
+            previousMillis = currentMillis;
+            Display[2] ^= (1<<7);//"To" LED blink
+          }
           Display[1]=255;
-
           BlinkM_setRGB(0x09, EEPROM.read(11), (option*8)-1, EEPROM.read(13));
         }
         break;
@@ -227,38 +229,38 @@ void configMenu(){
           #ifdef DEBUG
           Serial.println(F("Menu 4: Blue"));
           #endif
+          if(currentMillis - previousMillis > BLINKLENGHT) {
+            previousMillis = currentMillis;
+            Display[2] ^= (1<<7);//"To" LED blink
+          }
           Display[1]=255;
-
           BlinkM_setRGB(0x09, EEPROM.read(11), EEPROM.read(12), (option*8)-1);
         }
         break;
         case 5:
+        menu = 7;
         //Brightness Day
         // Brightness up on Button2 press
         // Brightness down on Button3 press 
         #ifdef DEBUG
         Serial.println(F("Menu 5: Day Brightness"));
         #endif
-/*        
-        if(currentMillis - previousMillis > 500) {
-          previousMillis = currentMillis;
-          Display[2] ^= (1<<5); //Menu LED toggle
-        }
-*/        
-        
+        Display[2] &= ~(1<<7);
+        PAST;
         Display[1]=255;
         break;
       case 6:
+        menu = 7;
         //Brightness Night
         // Brightness up on Button2 press
         // Brightness down on Button3 press 
         #ifdef DEBUG
         Serial.println(F("Menu 6: Night Brightness"));
         #endif
-/*        
-        Display[2] |= (1<<6);//Time LED on
-*/        
-        
+        if(currentMillis - previousMillis > BLINKLENGHT) {
+          previousMillis = currentMillis;
+          Display[0] ^= (1<<6); //"Past" LED Blink
+        }
         Display[1]=255;
         break;
       case 7:
@@ -266,11 +268,10 @@ void configMenu(){
         // Hour
         #ifdef DEBUG
         Serial.println(F("Menu 7: Hour"));
-        #endif        
-        if(currentMillis - previousMillis > 500) {
-          previousMillis = currentMillis;
-          Display[2] ^= (1<<6);//Time LED toggle
-        }
+        #endif
+        Display[0] &= ~(1<<6);
+        Display[0] &= ~(1<<7);
+        TIME;
         break;
       case 8:
         //Time setup
@@ -278,6 +279,7 @@ void configMenu(){
         #ifdef DEBUG
         Serial.println(F("Menu 8: Minutes (Tens place)"));
         #endif
+        TIME;
         break;
       case 9:
         //Time setup
@@ -285,6 +287,7 @@ void configMenu(){
         #ifdef DEBUG
         Serial.println(F("Menu 9: Minutes (Ones place)"));
         #endif
+        TIME;
         break;
       case 10:
         //Date setup
@@ -292,6 +295,7 @@ void configMenu(){
         #ifdef DEBUG
         Serial.println(F("Menu 10: Month"));
         #endif
+        DATE;
         break;
       case 11:
         //Date setup
@@ -299,6 +303,10 @@ void configMenu(){
         #ifdef DEBUG
         Serial.println(F("Menu 11: Day"));
         #endif
+        if(currentMillis - previousMillis > BLINKLENGHT) {
+          previousMillis = currentMillis;
+          Display[2] ^= (1<<7); //"Past" LED Blink
+        }
         break;
       case 12:
         //Date setup
@@ -306,6 +314,8 @@ void configMenu(){
         #ifdef DEBUG
         Serial.println(F("Menu 12: Year (Tens place)"));
         #endif
+        DATE;
+        QUARTER;
         break;
       case 13:
         //Date setup
@@ -313,6 +323,8 @@ void configMenu(){
         #ifdef DEBUG
         Serial.println(F("Menu 13: Year (Ones place)"));
         #endif
+        DATE;
+        HALF;
         break;
       default:
         menu = 0;
@@ -359,19 +371,19 @@ void saveOption(byte menuNumber, byte optionValue){
       break;
     case 2:
       //Color (Red)
-      return(EEPROM.write(11, (optionValue*8)-1));
+      return(EEPROM.write(11, (optionValue*4)-1));
       break;
     case 3:
       //Color (Green)
-      return(EEPROM.write(12, (optionValue*8)-1));
+      return(EEPROM.write(12, (optionValue*4)-1));
       break;
     case 4:
       //Color (Blue)
-      return(EEPROM.write(13, (optionValue*8)-1));
+      return(EEPROM.write(13, (optionValue*4)-1));
       break;
     case 5:
       //Brightness Day
-      return(EEPROM.write(14, (optionValue*8)-1));
+      return(EEPROM.write(14, (optionValue*4)-1));
       break;
     case 6:
       //Brightness Night
@@ -455,19 +467,19 @@ byte loadOption(byte menuNumber){
       break;
     case 2:
       //Color (Red)
-      return((EEPROM.read(11)-1)/8);
+      return((EEPROM.read(11)-1)/4);
       break;
     case 3:
       //Color (Green)
-      return((EEPROM.read(12)-1)/8);
+      return((EEPROM.read(12)-1)/4);
       break;
     case 4:
       //Color (Blue)
-      return((EEPROM.read(13)-1)/8);
+      return((EEPROM.read(13)-1)/4);
       break;
     case 5:
       //Brightness Day
-      return((EEPROM.read(14)-1)/8);
+      return((EEPROM.read(14)-1)/4);
       break;
     case 6:
       //Brightness Night
@@ -519,17 +531,17 @@ byte boundOption(byte menuNumber, byte optionValue){
   switch (menuNumber) {
     case 2:
       //Color (Red)
-      BlinkM_setRGB(0x09, optionValue*8, EEPROM.read(12), EEPROM.read(13));
+      BlinkM_setRGB(0x09, optionValue*4, EEPROM.read(12), EEPROM.read(13));
       menuNumber=6;
       break;
     case 3:
       //Color (Green)
-      BlinkM_setRGB(0x09, EEPROM.read(11), optionValue*8, EEPROM.read(13));
+      BlinkM_setRGB(0x09, EEPROM.read(11), optionValue*4, EEPROM.read(13));
       menuNumber=6;
       break;
     case 4:
       //Color (Blue)
-      BlinkM_setRGB(0x09, EEPROM.read(11), EEPROM.read(12), optionValue*8);
+      BlinkM_setRGB(0x09, EEPROM.read(11), EEPROM.read(12), optionValue*4);
       menuNumber=6;
       break;
     }
@@ -537,25 +549,42 @@ byte boundOption(byte menuNumber, byte optionValue){
     case 1:
     //Color
       if(optionValue>200||optionValue==0){
+        saveOption(1, 3);
+        setColor();
         return (3);
       } else if(optionValue>3){
+        saveOption(1, 1);
+        setColor();
         return (1);
       } else {
+        saveOption(1, optionValue);
+        setColor();
         return(optionValue);
       }
     break;
+    case 2:
+      //Color (Red)
+    case 3:
+      //Color (Green)
+    case 4:
+      //Color (Blue)
+      if(optionValue>200){
+        return (64);
+      } else if(optionValue>64){
+        return (0);
+      } else {
+        return(optionValue);
+      }
+      break;
     case 5:
       //Brightness Day
     case 6:
       //Brightness Night
       if(optionValue>200){
-        analogWrite(LEDOUTPUTENABLEPIN, 0);
-        return (32);
-      } else if(optionValue>32){
-        analogWrite(LEDOUTPUTENABLEPIN, 255);
+        return (64);
+      } else if(optionValue>64){
         return (0);
       } else {
-        analogWrite(LEDOUTPUTENABLEPIN, (255-(optionValue*8)));
         return(optionValue);
       }
       break;
@@ -650,3 +679,4 @@ byte boundOption(byte menuNumber, byte optionValue){
       break;
   }
 }
+

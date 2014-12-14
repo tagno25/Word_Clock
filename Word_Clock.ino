@@ -24,6 +24,8 @@
 #define BUTTON2 A0
 #define BUTTON3 A3
 
+#define BLINKLENGHT 500
+
 #include <Wire.h> //required for DS1307RTC.h
 #include <Time.h> //Required for timekeeping
 #include <DS1307RTC.h> //required for RTC
@@ -47,16 +49,15 @@ TimeChangeRule *tcr;        //pointer to the time change rule, use to get TZ abb
 time_t utc, local;
 char Display[3]={0,0,0};
 long previousMillis = 0;
-long menuMillis1 = 0;
 unsigned long currentMillis = millis();
+long menuMillis1 = currentMillis;
 
 void setup()
 { 
   
   #ifdef DEBUG
   Serial.begin(9600);
-  //delay(5000);
-  //while (!Serial) ; // wait until Arduino Serial Monitor opens
+  delay(5000);
   #endif
   
   pinMode(BUTTON1, INPUT_PULLUP);  
@@ -136,7 +137,7 @@ void loop()
       while (digitalRead(BUTTON1)==LOW){
         currentMillis = millis();
         //don't change menus until button is released
-        if(currentMillis - previousMillis > 500) {
+        if(currentMillis - previousMillis > BLINKLENGHT) {
           previousMillis = currentMillis;
           Display[0] ^= (1<<0); //Menu LED toggle
         }

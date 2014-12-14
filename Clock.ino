@@ -22,7 +22,7 @@
 #define OCLOCK	Display[2] |= (1<<4)
 #define CONFIG	Display[2] |= (1<<5)
 #define TIME	Display[2] |= (1<<6)
-#define TENS	Display[2] |= (1<<7)
+#define DATE	Display[2] |= (1<<7)
 
 void ledDisplayTime(){
   
@@ -318,9 +318,9 @@ void updateShiftRegister()
 
 void setBrightness()
 {
-  if (hour(local)<=7||hour(local)>=20){
-    analogWrite(LEDOUTPUTENABLEPIN, 255-EEPROM.read(15));
-  } else {
+  if (hour(local)<=7&&hour(local)>=20){
     analogWrite(LEDOUTPUTENABLEPIN, 255-EEPROM.read(14));
+  } else {
+    analogWrite(LEDOUTPUTENABLEPIN, 255-EEPROM.read(15));
   }
 }
