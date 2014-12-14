@@ -51,12 +51,18 @@ void configMenu(){
       if(currentMillis - menuMillis1 > 3000) {
         //reset menu timer to current millis when more than 3000 different
         menuMillis1 = currentMillis;
-      } else if(currentMillis - menuMillis1 > 500) {
+      } else if(currentMillis - menuMillis1 > 250) {
         //change menu when timer is more than 500 different from current
+        while (digitalRead(BUTTON1)==LOW){}//don't change menus until button is released
+        
         menuMillis1 = currentMillis;
         saveOption(menu, option);//save current option
         menu=menu+1;
-        option=loadOption(menu);//load previously set option 
+        option=loadOption(menu);//load previously set option
+        #ifdef DEBUG
+        Serial.print("New option: ");
+        Serial.println(option);
+        #endif
       }
     }
 
@@ -64,7 +70,7 @@ void configMenu(){
       if(currentMillis - menuMillis2 > 3000) {
         //reset timer to current millis when more than 3000 different
         menuMillis2 = currentMillis;
-      } else if(currentMillis - menuMillis2 > 200) {
+      } else if(currentMillis - menuMillis2 > 150) {
         //change option + when timer is more than 200 different from current
         menuMillis2 = currentMillis;
         option=option+1;
@@ -76,7 +82,7 @@ void configMenu(){
       if(currentMillis - menuMillis3 > 3000) {
         //reset menu timer to current millis more than 3000 different
         menuMillis3 = currentMillis;
-      } else if(currentMillis - menuMillis1 > 200) {
+      } else if(currentMillis - menuMillis1 > 150) {
         //change option - when timer is more than 200 different from current
         menuMillis3 = currentMillis;
         option=option-1;
@@ -85,6 +91,7 @@ void configMenu(){
     }
 
     
+    Display[0] &= ~(1<<0);
     Display[1]=0;
     for (byte n=0; n<5; ++n) {
       Display[2] &= ~(1<<n);
@@ -258,13 +265,11 @@ void configMenu(){
         // Hour
         #ifdef DEBUG
         Serial.println(F("Menu 7"));
-        #endif
-/*        
+        #endif        
         if(currentMillis - previousMillis > 500) {
           previousMillis = currentMillis;
           Display[2] ^= (1<<6);//Time LED toggle
         }
-*/
         break;
       case 8:
         //Time setup
@@ -335,7 +340,21 @@ void configMenu(){
   
   #ifdef DEBUG
   Serial.println(F("Close Menu"));
+  Serial.print(hour());
+  Serial.print(":");
+  Serial.print(minute());
+  Serial.print(":");
+  Serial.print(second());
+  Serial.print(" ");
+  Serial.print(day());
+  Serial.print("/");
+  Serial.print(month());
+  Serial.print(":");
+  Serial.println(year());
   #endif
+  
+  //Save time to RTC
+  RTC.set(now());
   
   //reset shift register data then display time
   wordsoff();
@@ -345,10 +364,9 @@ void configMenu(){
 }
 
 void saveOption(byte menuNumber, byte optionValue){
-  if (menuNumber>=7){
-    utc = now();
-    local = myTZ.toLocal(utc, &tcr);
-  }
+  utc = now();
+  local = myTZ.toLocal(utc, &tcr);
+      
   switch (menuNumber) {
     case 1:
       //Color Palette
@@ -377,46 +395,72 @@ void saveOption(byte menuNumber, byte optionValue){
     case 7:
       //Time setup
       // Hour
+      #ifdef DEBUG
+      Serial.println(optionValue);
+      #endif
       if (myTZ.locIsDST(local)){
-        setTime(optionValue+5, minute(), second(), day(), month(), year());
+        optionValue=optionValue+5;
+        setTime(optionValue, minute(), second(), day(), month(), year());
       } else {
-        setTime(optionValue+6, minute(), second(), day(), month(), year());
+        optionValue=optionValue+6;
+        setTime(optionValue, minute(), second(), day(), month(), year());
       }
       break;
     case 8:
       //Time setup
       // Minutes (Tens place)
-      setTime(hour(), (optionValue*10), second(), day(), month(), year());
+      #ifdef DEBUG
+      Serial.println((optionValue*10)+loadOption(9));
+      #endif
+      setTime(hour(), (optionValue*10)+loadOption(9), second(), day(), month(), year());
       break;
     case 9:
       //Time setup
       // Minutes (Ones place)
-      setTime(hour(), (minute()+optionValue), second(), day(), month(), year());
+      #ifdef DEBUG
+      Serial.println(loadOption(8)+optionValue);
+      #endif
+      setTime(hour(), loadOption(8)+optionValue, second(), day(), month(), year());
       break;
     case 10:
       //Date setup
       // Month
+      #ifdef DEBUG
+      Serial.println(optionValue);
+      #endif
       setTime(hour(), minute(), second(), day(), optionValue, year());
       break;
     case 11:
       //Date setup
       // Day (Tens place)
-      setTime(hour(), minute(), second(), (optionValue*10), month(), year());
+      #ifdef DEBUG
+      Serial.println((optionValue*10)+loadOption(12));
+      #endif
+      setTime(hour(), minute(), second(), (optionValue*10)+loadOption(12), month(), year());
       break;
     case 12:
       //Date setup
       // Day (Ones place)
-      setTime(hour(), minute(), second(), (day(local)+optionValue), month(), year());
+      #ifdef DEBUG
+      Serial.println(loadOption(11)+optionValue);
+      #endif
+      setTime(hour(), minute(), second(), (loadOption(11)*10)+optionValue, month(), year());
       break;
     case 13:
       //Date setup
       // Year (Tens place)
-      setTime(hour(), minute(), second(), day(), month(), (2000+(optionValue*10)));
+      #ifdef DEBUG
+      Serial.println(2000+(int(optionValue)*10)+(year(local)%10));
+      #endif
+      setTime(hour(), minute(), second(), day(), month(), int(loadOption(14)+(optionValue*10))+2000);
       break;
     case 14:
       //Date setup
       // Year (Ones place)
-      setTime(hour(), minute(), second(), day(), month(), (year()+optionValue));
+      #ifdef DEBUG
+      Serial.println(int(loadOption(13)+optionValue)+2000);
+      #endif
+      setTime(hour(), minute(), second(), day(), month(), int((loadOption(13)*10)+optionValue)+2000);
       break;
     default:
       break;
@@ -424,10 +468,8 @@ void saveOption(byte menuNumber, byte optionValue){
 }
 
 byte loadOption(byte menuNumber){
-  if (menuNumber>=7){
-    utc = now();
-    local = myTZ.toLocal(utc, &tcr);
-  }
+  utc = now();
+  local = myTZ.toLocal(utc, &tcr);
 
   switch (menuNumber) {
     case 1:
