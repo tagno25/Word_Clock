@@ -112,8 +112,8 @@ static void BlinkM_fadeToRGB(byte addr, byte red, byte grn, byte blu)
   Wire.beginTransmission(addr);
   Wire.write('c');
   Wire.write(red);
-  Wire.write(grn);
   Wire.write(blu);
+  Wire.write(grn);
   Wire.endTransmission();
 }
 
@@ -124,8 +124,8 @@ static void BlinkM_setRGB(byte addr, byte red, byte grn, byte blu)
   Wire.beginTransmission(addr);
   Wire.write('n');
   Wire.write(red);
-  Wire.write(grn);
   Wire.write(blu);
+  Wire.write(grn);
   Wire.endTransmission();
 }
 
@@ -135,8 +135,8 @@ static void BlinkM_fadeToRandomRGB(byte addr, byte rrnd, byte grnd, byte brnd)
   Wire.beginTransmission(addr);
   Wire.write('C');
   Wire.write(rrnd);
-  Wire.write(grnd);
   Wire.write(brnd);
+  Wire.write(grnd);
   Wire.endTransmission();
 }
 
