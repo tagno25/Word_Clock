@@ -63,6 +63,8 @@ void setup()
   pinMode(BUTTON2, INPUT_PULLUP);  
   pinMode(BUTTON3, INPUT_PULLUP);  
 
+  randomSeed(analogRead(7));//random seed
+
   setupShiftRegister();
   analogWrite(LEDOUTPUTENABLEPIN, 0);
   wordsoff();

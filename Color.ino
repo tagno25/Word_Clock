@@ -37,29 +37,71 @@ void setColor() {
 void holidayColor() {
   switch (month()) {
     case 1: //Snow & New Years
-    //White
+      //White
+      BlinkM_fadeToRGB(0x09, 0xFF, 0xFF, 0xFF);
+      break;
     case 2: //Valentines Day
-    //Red
+      //Red
+      BlinkM_fadeToRGB(0x09, 0xB6, 0x00, 0x00);
+      break;
     case 3: //St Patrick's Day
-    //Green
+      //Green
+      BlinkM_fadeToRGB(0x09, 0x00, 0x8A, 0x05);
+      break;
     case 4: //Easter
-    //Yellow & Purple
+      switch (random(2)){
+        case 1://Yellow
+          BlinkM_fadeToRGB(0x09, 0xFF, 0xF2, 0x28);
+          break;
+        case 2://Pink
+          BlinkM_fadeToRGB(0x09, 0xFB, 0x61, 0xFF);
+        default://Purple
+          BlinkM_fadeToRGB(0x09, 0xB8, 0x28, 0xFF);
+          break;
+      }
+      break;
     case 5: //May
-    //Green?
+      //Green
+      BlinkM_fadeToRGB(0x09, 0x00, 0xFF, 0x00);
+      break;
     case 6: //June
-    //Yellow?
+      //Yellow?
     case 7: //Independence Day
-    //Red, White, Blue
+      switch (random(2)){
+        case 2://Red
+          BlinkM_fadeToRGB(0x09, 0xFF, 0x00, 0x00);
+          break;
+        case 1://White
+          BlinkM_fadeToRGB(0x09, 0xFF, 0xFF, 0xFF);
+          break;
+        default://Blue
+          BlinkM_fadeToRGB(0x09, 0x00, 0x00, 0xFF);
+          break;
+      }
+      break;
     case 8: // August
-    //Red Orange (sunburn color)
+      //Red Orange (sunburn color)
     case 9: // Stptember
-    //dark red, dark orange, brown
+      //dark red, dark orange, brown
+//    random(2);
     case 10:
-    // Orange
+      // Orange
     case 11: //Thanksgiving
-    //dark red, dark orange, brown
-    case 12://Ghristmas
-    //Red & Green
+      //dark red, dark orange, brown
+//    random(2);
+    case 12://Christmas
+      switch (random(2)){
+        case 2://Red
+          BlinkM_fadeToRGB(0x09, 0xFF, 0x00, 0x00);
+          break;
+        case 1://Green
+          BlinkM_fadeToRGB(0x09, 0x00, 0xFF, 0x00);
+          break;
+        default://White
+          BlinkM_fadeToRGB(0x09, 0xFF, 0xFF, 0xFF);
+          break;
+      }
+      break;
     default:
       break;
   }
