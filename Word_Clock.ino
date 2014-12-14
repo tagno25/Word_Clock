@@ -74,8 +74,6 @@ void setup()
   
   BlinkM_stopScript(0x09);
   BlinkM_setFadeSpeed(0x09,128);
-
-  setColor(); //Update the color
   
   #ifdef LCD
   setupDisplay();
@@ -102,6 +100,8 @@ void setup()
   }
 
   setSyncInterval(3600); //Resync clock with RTC daily
+
+  setColor(); //Update the color
   
   Alarm.alarmRepeat(1, 0, 0, alarmHourly);//run alarmHourly() every hour
   Alarm.timerRepeat(30, alarm30sec); // run ledDisplayTime() every 30 seconds

@@ -358,6 +358,7 @@ void configMenu(){
   
   //reset shift register data then display time
   wordsoff();
+  setColor();
   ledDisplayTime();
   setBrightness();
   updateShiftRegister();
@@ -371,6 +372,7 @@ void saveOption(byte menuNumber, byte optionValue){
     case 1:
       //Color Palette
       return(EEPROM.write(10, optionValue));
+      setColor();
       break;
     case 2:
       //Color (Red)
@@ -544,22 +546,33 @@ byte loadOption(byte menuNumber){
 
 byte boundOption(byte menuNumber, byte optionValue){
   switch (menuNumber) {
+    case 2:
+      //Color (Red)
+      BlinkM_setRGB(0x09, optionValue*8, EEPROM.read(12), EEPROM.read(13));
+      menuNumber=6;
+      break;
+    case 3:
+      //Color (Green)
+      BlinkM_setRGB(0x09, EEPROM.read(11), optionValue*8, EEPROM.read(13));
+      menuNumber=6;
+      break;
+    case 4:
+      //Color (Blue)
+      BlinkM_setRGB(0x09, EEPROM.read(11), EEPROM.read(12), optionValue*8);
+      menuNumber=6;
+      break;
+    }
+  switch (menuNumber) {
     case 1:
     //Color
       if(optionValue>200||optionValue==0){
-        return (4);
-      } else if(optionValue>4){
+        return (3);
+      } else if(optionValue>3){
         return (1);
       } else {
         return(optionValue);
       }
     break;
-    case 2:
-      //Color (Red)
-    case 3:
-      //Color (Green)
-    case 4:
-      //Color (Blue)
     case 5:
       //Brightness Day
     case 6:

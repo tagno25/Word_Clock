@@ -8,6 +8,9 @@ void alarmHourly(){
 
 void alarm30sec(){
   ledDisplayTime(); //update LED display
+  #ifdef DEBUG
+  setColor();
+  #endif
 }
 
 #ifdef DEBUG

@@ -3,7 +3,6 @@ void setColor() {
   // #1 Custom (saved to EEPROM)
   // #2 Random Color (changes every hour) (change every 30 seconds in config mode)
   // #3 Holiday Color
-  // #4 Birthstone Color
   switch (EEPROM.read(10)) {
     case 1:
       #ifdef DEBUG
@@ -35,69 +34,176 @@ void setColor() {
 }
 
 void holidayColor() {
+  #ifdef DEBUG
+  Serial.println(F("holidayColor Start"));
+  Serial.println(month());
+  #endif
   switch (month()) {
     case 1: //Snow & New Years
       //White
+      #ifdef DEBUG
+      Serial.println(F("White"));
+      #endif
       BlinkM_fadeToRGB(0x09, 0xFF, 0xFF, 0xFF);
       break;
     case 2: //Valentines Day
-      //Red
-      BlinkM_fadeToRGB(0x09, 0xB6, 0x00, 0x00);
-      break;
+      switch (random(2)){
+        case 1://Red
+          #ifdef DEBUG
+          Serial.println(F("Red"));
+          #endif
+          BlinkM_fadeToRGB(0x09, 0xB6, 0x00, 0x00);
+          break;
+        case 2://Pink
+          #ifdef DEBUG
+          Serial.println(F("Pink"));
+          #endif
+          BlinkM_fadeToRGB(0x09, 0x79, 0x00, 0x08);
+          break;
+      }      //Red
+      #ifdef DEBUG
     case 3: //St Patrick's Day
       //Green
+      #ifdef DEBUG
+      Serial.println(F("Green"));
+      #endif
       BlinkM_fadeToRGB(0x09, 0x00, 0x8A, 0x05);
       break;
     case 4: //Easter
-      switch (random(2)){
+      switch (random(3)){
         case 1://Yellow
+          #ifdef DEBUG
+          Serial.println(F("Yellow"));
+          #endif
           BlinkM_fadeToRGB(0x09, 0xFF, 0xF2, 0x28);
           break;
         case 2://Pink
+          #ifdef DEBUG
+          Serial.println(F("Pink"));
+          #endif
           BlinkM_fadeToRGB(0x09, 0xFB, 0x61, 0xFF);
+          break;
         default://Purple
+          #ifdef DEBUG
+          Serial.println(F("Purple"));
+          #endif
           BlinkM_fadeToRGB(0x09, 0xB8, 0x28, 0xFF);
           break;
       }
       break;
     case 5: //May
       //Green
+      #ifdef DEBUG
+      Serial.println(F("Green"));
+      #endif
       BlinkM_fadeToRGB(0x09, 0x00, 0xFF, 0x00);
       break;
     case 6: //June
-      //Yellow?
+      //Yellow
+      #ifdef DEBUG
+      Serial.println(F("Yellow"));
+      #endif
+      BlinkM_fadeToRGB(0x09, 0xDF, 0x34, 0x00);
+      break;
     case 7: //Independence Day
-      switch (random(2)){
+      switch (random(3)){
         case 2://Red
+          #ifdef DEBUG
+          Serial.println(F("Red"));
+          #endif
           BlinkM_fadeToRGB(0x09, 0xFF, 0x00, 0x00);
           break;
         case 1://White
+          #ifdef DEBUG
+          Serial.println(F("White"));
+          #endif
           BlinkM_fadeToRGB(0x09, 0xFF, 0xFF, 0xFF);
           break;
         default://Blue
+          #ifdef DEBUG
+          Serial.println(F("Blue"));
+          #endif
           BlinkM_fadeToRGB(0x09, 0x00, 0x00, 0xFF);
           break;
       }
       break;
     case 8: // August
-      //Red Orange (sunburn color)
+      //Orange
+      #ifdef DEBUG
+      Serial.println(F("Orange"));
+      #endif
+      BlinkM_fadeToRGB(0x09, 0xFF, 0x34, 0x00);
+      break;
     case 9: // Stptember
       //dark red, dark orange, brown
-//    random(2);
+      switch (random(3)){
+        case 2://Red
+          #ifdef DEBUG
+          Serial.println(F("Red"));
+          #endif
+          BlinkM_fadeToRGB(0x09, 0x66, 0x00, 0x00);
+          break;
+        case 1://Yellow
+          #ifdef DEBUG
+          Serial.println(F("Yellow"));
+          #endif
+          BlinkM_fadeToRGB(0x09, 0x66, 0x33, 0x00);
+          break;
+        default://Yellow2
+          #ifdef DEBUG
+          Serial.println(F("Yellow2"));
+          #endif
+          BlinkM_fadeToRGB(0x09, 0x66, 0x66, 0x00);
+          break;
+      }
+      break;
     case 10:
       // Orange
+      #ifdef DEBUG
+      Serial.println(F("Orange"));
+      #endif
+      BlinkM_fadeToRGB(0x09, 0xBF, 0x4C, 0x00);
+      break;
     case 11: //Thanksgiving
-      //dark red, dark orange, brown
-//    random(2);
+      switch (random(3)){
+        case 2://Red Purple
+          #ifdef DEBUG
+          Serial.println(F("Red Purple"));
+          #endif
+          BlinkM_fadeToRGB(0x09, 0x97, 0x03, 0x11);
+          break;
+        case 1://Yellow green
+          #ifdef DEBUG
+          Serial.println(F("Yellow Green"));
+          #endif
+          BlinkM_fadeToRGB(0x09, 0x80, 0x80, 0x00);
+          break;
+        default://Red
+          #ifdef DEBUG
+          Serial.println(F("Red"));
+          #endif
+          BlinkM_fadeToRGB(0x09, 0x8B, 0x00, 0x00);
+          break;
+      }
+      break;
     case 12://Christmas
-      switch (random(2)){
+      switch (random(3)){
         case 2://Red
+          #ifdef DEBUG
+          Serial.println(F("Red"));
+          #endif
           BlinkM_fadeToRGB(0x09, 0xFF, 0x00, 0x00);
           break;
         case 1://Green
+          #ifdef DEBUG
+          Serial.println(F("Green"));
+          #endif
           BlinkM_fadeToRGB(0x09, 0x00, 0xFF, 0x00);
           break;
         default://White
+          #ifdef DEBUG
+          Serial.println(F("White"));
+          #endif
           BlinkM_fadeToRGB(0x09, 0xFF, 0xFF, 0xFF);
           break;
       }
@@ -107,22 +213,3 @@ void holidayColor() {
   }
 }
 
-void birthStoneColor() {
-  // http://bit.ly/1vrDKuX
-  switch (month()) {
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 9:
-    case 10:
-    case 11:
-    case 12:
-    default:
-      break;
-  }
-}
