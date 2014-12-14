@@ -73,7 +73,7 @@ void setup()
   Wire.begin();
   
   BlinkM_stopScript(0x09);
-  BlinkM_setFadeSpeed(0x09,128);
+  BlinkM_setFadeSpeed(0x09,255);
   
   #ifdef LCD
   setupDisplay();
@@ -133,6 +133,15 @@ void loop()
       menuMillis1 = currentMillis;
     } else if(currentMillis - menuMillis1 > 4000) {//enter menu when timer is more than 4000 different from current
       menuMillis1 = currentMillis;
+      while (digitalRead(BUTTON1)==LOW){
+        currentMillis = millis();
+        //don't change menus until button is released
+        if(currentMillis - previousMillis > 500) {
+          previousMillis = currentMillis;
+          Display[0] ^= (1<<0); //Menu LED toggle
+        }
+        updateShiftRegister();
+      }
       configMenu();
     }
   }

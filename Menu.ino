@@ -1,24 +1,3 @@
-/*
-#define CONFIG	Display[2] |= (1<<5)
-#define TIME	Display[2] |= (1<<6)
-#define TENS	Display[2] |= (1<<7)
-
-#define TWELVE	Display[1] |= (1<<0)
-#define ONE	Display[1] |= (1<<1)
-#define TWO	Display[1] |= (1<<2)
-#define THREE	Display[1] |= (1<<3)
-#define FOUR	Display[1] |= (1<<4)
-#define HFIVE	Display[1] |= (1<<5)
-#define SIX	Display[1] |= (1<<6)
-#define SEVEN	Display[1] |= (1<<7)
-#define EIGHT	Display[2] |= (1<<0)
-#define NINE	Display[2] |= (1<<1)
-#define HTEN	Display[2] |= (1<<2)
-#define ELEVEN	Display[2] |= (1<<3)
-#define OCLOCK	Display[2] |= (1<<4)
-*/
-
-
 void configMenu(){
   #ifdef DEBUG
   Serial.println(F("Entered Menu"));
@@ -53,16 +32,20 @@ void configMenu(){
         menuMillis1 = currentMillis;
       } else if(currentMillis - menuMillis1 > 250) {
         //change menu when timer is more than 500 different from current
-        while (digitalRead(BUTTON1)==LOW){}//don't change menus until button is released
         
+        while (digitalRead(BUTTON1)==LOW){
+          //don't change menus until button is released
+          currentMillis = millis();
+          if(currentMillis - previousMillis > 500) {
+            previousMillis = currentMillis;
+            Display[0] ^= (1<<0); //Menu LED toggle
+          }
+          updateShiftRegister();
+        }
         menuMillis1 = currentMillis;
         saveOption(menu, option);//save current option
         menu=menu+1;
         option=loadOption(menu);//load previously set option
-        #ifdef DEBUG
-        Serial.print("New option: ");
-        Serial.println(option);
-        #endif
       }
     }
 
@@ -92,82 +75,102 @@ void configMenu(){
 
     
     Display[0] &= ~(1<<0);
+    Display[0] &= ~(1<<1);
+    Display[0] &= ~(1<<4);
     Display[1]=0;
     for (byte n=0; n<5; ++n) {
       Display[2] &= ~(1<<n);
     }
     CONFIG;
 
-    if(menu==1||menu>=7){
-      switch (option){
-        case 12:
-          if(menu==7){
-            OCLOCK;
-          } else {
-            TWELVE;
-          }
+    if( menu==1 || (menu>=7 && menu!=11) ){
+      if(menu==7 && option>=12){
+        OCLOCK;
+      } else if(option==12){
+        TWELVE;
+      }
+      switch (option%12){
         case 0:
           TWELVE;
           break;
-        case 13:
-          OCLOCK;
         case 1:
           ONE;
           break;
-        case 14:
-          OCLOCK;
         case 2:
           TWO;
           break;
-        case 15:
-          OCLOCK;
         case 3:
           THREE;
           break;
-        case 16:
-          OCLOCK;
         case 4:
           FOUR;
           break;
-        case 17:
-          OCLOCK;
         case 5:
           HFIVE;
           break;
-        case 18:
-          OCLOCK;
         case 6:
           SIX;
           break;
-        case 19:
-          OCLOCK;
         case 7:
           SEVEN;
           break;
-        case 20:
-          OCLOCK;
         case 8:
           EIGHT;
           break;
-        case 21:
-          OCLOCK;
         case 9:
           NINE;
           break;
-        case 22:
-          OCLOCK;
         case 10:
           HTEN;
           break;
-        case 23:
-          OCLOCK;
         case 11:
           ELEVEN;
           break;
         default:
           break;
       }
+    }else if( menu==11 ){
+      if (option/10==1){
+        MTEN;
+      } else if (option/10==2){
+        TWENTY;
+      } else if (option/10==3){
+        MTEN;
+        TWENTY;
+      }
+      switch (option%10){
+        case 1:
+          ONE;
+          break;
+        case 2:
+          TWO;
+          break;
+        case 3:
+          THREE;
+          break;
+        case 4:
+          FOUR;
+          break;
+        case 5:
+          HFIVE;
+          break;
+        case 6:
+          SIX;
+          break;
+        case 7:
+          SEVEN;
+          break;
+        case 8:
+          EIGHT;
+          break;
+        case 9:
+          NINE;
+          break;
+        default:
+          break;
+      }
     }
+
 
     switch (menu) {
       case 1:
@@ -179,7 +182,7 @@ void configMenu(){
         // #3 Holiday Color
         // #4 Birthstone Color
         #ifdef DEBUG
-        Serial.println(F("Menu 1"));
+        Serial.println(F("Menu 1: Color Palette"));
         #endif
 /*        
         Display[2] |= (1<<5);//Menu LED on
@@ -188,30 +191,28 @@ void configMenu(){
       case 2:
         //Color
         // Red (if preselected #1)
-        #ifdef DEBUG
-        Serial.println(F("Menu 2"));
-        #endif
         if (loadOption(1)!=1) {
           //skip to Brightness
           menu = 5;
         } else {
+          #ifdef DEBUG
+          Serial.println(F("Menu 2: Red"));
+          #endif
           Display[1]=255;
-
           BlinkM_setRGB(0x09, (option*8)-1, EEPROM.read(12), EEPROM.read(13));
         }
         break;
       case 3:
         //Color
         // Green (if preselected #1)
-        #ifdef DEBUG
-        Serial.println(F("Menu 3"));
-        #endif
         if (loadOption(1)!=1) {
           //skip to Brightness
           menu = 5;
         } else {
+          #ifdef DEBUG
+          Serial.println(F("Menu 3: Green"));
+          #endif
           Display[1]=255;
-          
 
           BlinkM_setRGB(0x09, EEPROM.read(11), (option*8)-1, EEPROM.read(13));
         }
@@ -219,13 +220,13 @@ void configMenu(){
       case 4:
         //Color
         // Blue (if preselected #1)
-        #ifdef DEBUG
-        Serial.println(F("Menu 4"));
-        #endif
         if (loadOption(1)!=1) {
           //skip to Brightness
           menu = 5;
         } else {
+          #ifdef DEBUG
+          Serial.println(F("Menu 4: Blue"));
+          #endif
           Display[1]=255;
 
           BlinkM_setRGB(0x09, EEPROM.read(11), EEPROM.read(12), (option*8)-1);
@@ -236,7 +237,7 @@ void configMenu(){
         // Brightness up on Button2 press
         // Brightness down on Button3 press 
         #ifdef DEBUG
-        Serial.println(F("Menu 5"));
+        Serial.println(F("Menu 5: Day Brightness"));
         #endif
 /*        
         if(currentMillis - previousMillis > 500) {
@@ -252,7 +253,7 @@ void configMenu(){
         // Brightness up on Button2 press
         // Brightness down on Button3 press 
         #ifdef DEBUG
-        Serial.println(F("Menu 6"));
+        Serial.println(F("Menu 6: Night Brightness"));
         #endif
 /*        
         Display[2] |= (1<<6);//Time LED on
@@ -264,7 +265,7 @@ void configMenu(){
         //Time setup
         // Hour
         #ifdef DEBUG
-        Serial.println(F("Menu 7"));
+        Serial.println(F("Menu 7: Hour"));
         #endif        
         if(currentMillis - previousMillis > 500) {
           previousMillis = currentMillis;
@@ -275,49 +276,42 @@ void configMenu(){
         //Time setup
         // Minutes (Tens place)
         #ifdef DEBUG
-        Serial.println(F("Menu 8"));
+        Serial.println(F("Menu 8: Minutes (Tens place)"));
         #endif
         break;
       case 9:
         //Time setup
         // Minutes (Ones place)
         #ifdef DEBUG
-        Serial.println(F("Menu 9"));
+        Serial.println(F("Menu 9: Minutes (Ones place)"));
         #endif
         break;
       case 10:
         //Date setup
         // Month
         #ifdef DEBUG
-        Serial.println(F("Menu 10"));
+        Serial.println(F("Menu 10: Month"));
         #endif
         break;
       case 11:
         //Date setup
-        // Day (Tens place)
+        // Day
         #ifdef DEBUG
-        Serial.println(F("Menu 11"));
+        Serial.println(F("Menu 11: Day"));
         #endif
         break;
       case 12:
         //Date setup
-        // Day (Ones place)
+        // Year (Tens place)
         #ifdef DEBUG
-        Serial.println(F("Menu 12"));
+        Serial.println(F("Menu 12: Year (Tens place)"));
         #endif
         break;
       case 13:
         //Date setup
-        // Year (Tens place)
-        #ifdef DEBUG
-        Serial.println(F("Menu 13"));
-        #endif
-        break;
-      case 14:
-        //Date setup
         // Year (Ones place)
         #ifdef DEBUG
-        Serial.println(F("Menu 14"));
+        Serial.println(F("Menu 13: Year (Ones place)"));
         #endif
         break;
       default:
@@ -340,17 +334,6 @@ void configMenu(){
   
   #ifdef DEBUG
   Serial.println(F("Close Menu"));
-  Serial.print(hour());
-  Serial.print(":");
-  Serial.print(minute());
-  Serial.print(":");
-  Serial.print(second());
-  Serial.print(" ");
-  Serial.print(day());
-  Serial.print("/");
-  Serial.print(month());
-  Serial.print(":");
-  Serial.println(year());
   #endif
   
   //Save time to RTC
@@ -358,10 +341,10 @@ void configMenu(){
   
   //reset shift register data then display time
   wordsoff();
-  setColor();
-  ledDisplayTime();
-  setBrightness();
   updateShiftRegister();
+  setColor();
+  setBrightness();
+  ledDisplayTime();
 }
 
 void saveOption(byte menuNumber, byte optionValue){
@@ -434,35 +417,27 @@ void saveOption(byte menuNumber, byte optionValue){
       break;
     case 11:
       //Date setup
-      // Day (Tens place)
+      // Day
       #ifdef DEBUG
-      Serial.println((optionValue*10)+loadOption(12));
+      Serial.println(optionValue);
       #endif
-      setTime(hour(), minute(), second(), (optionValue*10)+loadOption(12), month(), year());
+      setTime(hour(), minute(), second(), optionValue, month(), year());
       break;
     case 12:
-      //Date setup
-      // Day (Ones place)
-      #ifdef DEBUG
-      Serial.println(loadOption(11)+optionValue);
-      #endif
-      setTime(hour(), minute(), second(), (loadOption(11)*10)+optionValue, month(), year());
-      break;
-    case 13:
       //Date setup
       // Year (Tens place)
       #ifdef DEBUG
       Serial.println(2000+(int(optionValue)*10)+(year(local)%10));
       #endif
-      setTime(hour(), minute(), second(), day(), month(), int(loadOption(14)+(optionValue*10))+2000);
+      setTime(hour(), minute(), second(), day(), month(), int(loadOption(13)+(optionValue*10))+2000);
       break;
-    case 14:
+    case 13:
       //Date setup
       // Year (Ones place)
       #ifdef DEBUG
       Serial.println(int(loadOption(13)+optionValue)+2000);
       #endif
-      setTime(hour(), minute(), second(), day(), month(), int((loadOption(13)*10)+optionValue)+2000);
+      setTime(hour(), minute(), second(), day(), month(), int((loadOption(12)*10)+optionValue)+2000);
       break;
     default:
       break;
@@ -520,20 +495,15 @@ byte loadOption(byte menuNumber){
       break;
     case 11:
       //Date setup
-      // Day (Tens place)
-      return(day(local)/10);
+      // Day
+      return(day(local));
       break;
     case 12:
-      //Date setup
-      // Day (Ones place)
-      return(day(local)%10);
-      break;
-    case 13:
       //Date setup
       // Year (Tens place)
       return((year(local)/10)%10);
       break;
-    case 14:
+    case 13:
       //Date setup
       // Year (Ones place)
       return(year(local)%10);
@@ -545,6 +515,7 @@ byte loadOption(byte menuNumber){
 }
 
 byte boundOption(byte menuNumber, byte optionValue){
+  byte monthLength=31;
   switch (menuNumber) {
     case 2:
       //Color (Red)
@@ -634,31 +605,25 @@ byte boundOption(byte menuNumber, byte optionValue){
       break;
     case 11:
       //Date setup
-      // Day (Tens place)
-      if(optionValue>200){
-        return (3);
-      } else if(optionValue>3){
+      // Day
+      if (month()==2) { // february
+        if (year()%4 != 0 || (year()%100 == 0 && year()%400 != 0)) {
+          monthLength=29; //is leap year
+        } else {
+          monthLength=28; //is not leap year
+        }
+      } else if(month()==4||month()==6||month()==9||month()==11) {
+        monthLength=30;
+      }
+      if(optionValue>200||optionValue==0){
+        return (monthLength);
+      } else if(optionValue>monthLength){
         return (0);
       } else {
         return(optionValue);
       }
       break;
     case 12:
-      //Date setup
-      // Day (Ones place)
-      if(optionValue>200 && (day(local)/10)==3){
-        return (1); //wrap to 1 if greater than 200 and a 3X day
-      } else if(optionValue>200||(optionValue==0 && (day(local)/10)==0)){
-        return (9); //wrap to 9 if greater than 200 or (equal to 0 and a 0X day) 
-      } else if(optionValue>9 && (day(local)/10)==0){
-        return (1); //wrap to 1 if greater than 9 and a 0X day
-      } else if(optionValue>9||(optionValue>1 && (day(local)/10)==3)){
-        return (0); //wrap to 0 if greater than 9 or (grearter than 1 and a 3X day)
-      } else {
-        return(optionValue);
-      }
-      break;
-    case 13:
       //Date setup
       // Year (Tens place)
       if(optionValue>200){
@@ -669,7 +634,7 @@ byte boundOption(byte menuNumber, byte optionValue){
         return(optionValue);
       }
       break;
-    case 14:
+    case 13:
       //Date setup
       // Year (Ones place)
       if(optionValue>200){

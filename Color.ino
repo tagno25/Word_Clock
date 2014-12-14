@@ -23,11 +23,6 @@ void setColor() {
       holidayColor();
       break;
     case 4:
-      #ifdef DEBUG
-      Serial.println(F("Birth Stone Color"));
-      #endif
-      birthStoneColor();
-      break;
     default:
       break;
   }
@@ -61,7 +56,6 @@ void holidayColor() {
           BlinkM_fadeToRGB(0x09, 0x79, 0x00, 0x08);
           break;
       }      //Red
-      #ifdef DEBUG
     case 3: //St Patrick's Day
       //Green
       #ifdef DEBUG
