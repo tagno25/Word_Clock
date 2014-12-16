@@ -48,6 +48,11 @@ void configMenu(){
         option=loadOption(menu);//load previously set option
       }
     }
+    
+    if (digitalRead(BUTTON2)==LOW && digitalRead(BUTTON3)==LOW && (menu==5 || menu==6)){
+      analogWrite(LEDOUTPUTENABLEPIN, 255-option);
+    }
+
 
     if (digitalRead(BUTTON2)==LOW){
       if(currentMillis - menuMillis2 > 1000) {
@@ -198,7 +203,7 @@ void configMenu(){
             Display[2] ^= (1<<7);//"To" LED blink
           }
           Display[1]=255;
-          BlinkM_setRGB(0x09, (option*8)-1, EEPROM.read(12), EEPROM.read(13));
+          BlinkM_setRGB(0x09, option*8, EEPROM.read(12), EEPROM.read(13));
         }
         break;
       case 3:
@@ -216,7 +221,7 @@ void configMenu(){
             Display[2] ^= (1<<7);//"To" LED blink
           }
           Display[1]=255;
-          BlinkM_setRGB(0x09, EEPROM.read(11), (option*8)-1, EEPROM.read(13));
+          BlinkM_setRGB(0x09, EEPROM.read(11), option, EEPROM.read(13));
         }
         break;
       case 4:
@@ -234,11 +239,10 @@ void configMenu(){
             Display[2] ^= (1<<7);//"To" LED blink
           }
           Display[1]=255;
-          BlinkM_setRGB(0x09, EEPROM.read(11), EEPROM.read(12), (option*8)-1);
+          BlinkM_setRGB(0x09, EEPROM.read(11), EEPROM.read(12), option);
         }
         break;
         case 5:
-        menu = 7;
         //Brightness Day
         // Brightness up on Button2 press
         // Brightness down on Button3 press 
@@ -250,7 +254,6 @@ void configMenu(){
         Display[1]=255;
         break;
       case 6:
-        menu = 7;
         //Brightness Night
         // Brightness up on Button2 press
         // Brightness down on Button3 press 
@@ -371,23 +374,23 @@ void saveOption(byte menuNumber, byte optionValue){
       break;
     case 2:
       //Color (Red)
-      return(EEPROM.write(11, (optionValue*4)-1));
+      return(EEPROM.write(11, optionValue));
       break;
     case 3:
       //Color (Green)
-      return(EEPROM.write(12, (optionValue*4)-1));
+      return(EEPROM.write(12, optionValue));
       break;
     case 4:
       //Color (Blue)
-      return(EEPROM.write(13, (optionValue*4)-1));
+      return(EEPROM.write(13, optionValue));
       break;
     case 5:
       //Brightness Day
-      return(EEPROM.write(14, (optionValue*4)-1));
+      return(EEPROM.write(14, optionValue));
       break;
     case 6:
       //Brightness Night
-      return(EEPROM.write(15, (optionValue*8)-1));
+      return(EEPROM.write(15, optionValue));
       break;
     case 7:
       //Time setup
@@ -467,23 +470,23 @@ byte loadOption(byte menuNumber){
       break;
     case 2:
       //Color (Red)
-      return((EEPROM.read(11)-1)/4);
+      return(EEPROM.read(11));
       break;
     case 3:
       //Color (Green)
-      return((EEPROM.read(12)-1)/4);
+      return(EEPROM.read(12));
       break;
     case 4:
       //Color (Blue)
-      return((EEPROM.read(13)-1)/4);
+      return(EEPROM.read(13));
       break;
     case 5:
       //Brightness Day
-      return((EEPROM.read(14)-1)/4);
+      return(EEPROM.read(14));
       break;
     case 6:
       //Brightness Night
-      return((EEPROM.read(15)-1)/8);
+      return(EEPROM.read(15));
       break;
     case 7:
       //Time setup
@@ -568,25 +571,11 @@ byte boundOption(byte menuNumber, byte optionValue){
       //Color (Green)
     case 4:
       //Color (Blue)
-      if(optionValue>200){
-        return (64);
-      } else if(optionValue>64){
-        return (0);
-      } else {
-        return(optionValue);
-      }
-      break;
     case 5:
       //Brightness Day
     case 6:
       //Brightness Night
-      if(optionValue>200){
-        return (64);
-      } else if(optionValue>64){
-        return (0);
-      } else {
-        return(optionValue);
-      }
+      return(optionValue+7);
       break;
     case 7:
       //Time setup
