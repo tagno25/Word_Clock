@@ -4,7 +4,7 @@
 //switches use 3 pins (7,8,9)
 
 //Comment out to disable debug info (Should speed up execution and save space)
-#define DEBUG
+//#define DEBUG
 
 //Use enable to use LCD
 //#define LCD
@@ -25,6 +25,83 @@
 #define BUTTON3 A3
 
 #define BLINKLENGHT 500
+
+// Display output pin assignments
+#define THREE	Display[0] |= (1<<0)
+#define SIX	Display[0] |= (1<<1)
+#define TWELVE	Display[0] |= (1<<2)
+#define NINE	Display[0] |= (1<<3)
+#define MFIVE	Display[0] |= (1<<4)
+#define OCLOCK	Display[0] |= (1<<5)
+#define TWENTY 	Display[0] |= (1<<6)  
+#define DATE	Display[0] |= (1<<7)
+#define TWO	Display[1] |= (1<<0)
+#define HFIVE	Display[1] |= (1<<1)
+#define TO	Display[1] |= (1<<2)
+#define EIGHT	Display[1] |= (1<<3)
+#define MTEN	Display[1] |= (1<<4)
+#define ELEVEN	Display[1] |= (1<<5)
+#define HALF	Display[1] |= (1<<6)
+#define TIME	Display[1] |= (1<<7)
+#define ONE	Display[2] |= (1<<0)
+#define FOUR	Display[2] |= (1<<1)
+#define PAST	Display[2] |= (1<<2)
+#define SEVEN	Display[2] |= (1<<3)
+#define QUARTER	Display[2] |= (1<<4)
+#define HTEN	Display[2] |= (1<<5)
+#define ITIS	Display[2] |= (1<<6)
+#define CONFIG	Display[2] |= (1<<7)
+
+#define TOGGLETHREE	Display[0] ^= (1<<0)
+#define TOGGLESIX	Display[0] ^= (1<<1)
+#define TOGGLETWELVE	Display[0] ^= (1<<2)
+#define TOGGLENINE	Display[0] ^= (1<<3)
+#define TOGGLEMFIVE	Display[0] ^= (1<<4)
+#define TOGGLEOCLOCK	Display[0] ^= (1<<5)
+#define TOGGLETWENTY 	Display[0] ^= (1<<6)  
+#define TOGGLEDATE	Display[0] ^= (1<<7)
+#define TOGGLETWO	Display[1] ^= (1<<0)
+#define TOGGLEHFIVE	Display[1] ^= (1<<1)
+#define TOGGLETO	Display[1] ^= (1<<2)
+#define TOGGLEEIGHT	Display[1] ^= (1<<3)
+#define TOGGLEMTEN	Display[1] ^= (1<<4)
+#define TOGGLEELEVEN	Display[1] ^= (1<<5)
+#define TOGGLEHALF	Display[1] ^= (1<<6)
+#define TOGGLETIME	Display[1] ^= (1<<7)
+#define TOGGLEONE	Display[2] ^= (1<<0)
+#define TOGGLEFOUR	Display[2] ^= (1<<1)
+#define TOGGLEPAST	Display[2] ^= (1<<2)
+#define TOGGLESEVEN	Display[2] ^= (1<<3)
+#define TOGGLEQUARTER	Display[2] ^= (1<<4)
+#define TOGGLEHTEN	Display[2] ^= (1<<5)
+#define TOGGLEITIS	Display[2] ^= (1<<6)
+#define TOGGLECONFIG	Display[2] ^= (1<<7)
+
+#define BLANKTHREE	Display[0] &= ~(1<<0)
+#define BLANKSIX	Display[0] &= ~(1<<1)
+#define BLANKTWELVE	Display[0] &= ~(1<<2)
+#define BLANKNINE	Display[0] &= ~(1<<3)
+#define BLANKMFIVE	Display[0] &= ~(1<<4)
+#define BLANKOCLOCK	Display[0] &= ~(1<<5)
+#define BLANKTWENTY 	Display[0] &= ~(1<<6)  
+#define BLANKDATE	Display[0] &= ~(1<<7)
+#define BLANKTWO	Display[1] &= ~(1<<0)
+#define BLANKHFIVE	Display[1] &= ~(1<<1)
+#define BLANKTO	        Display[1] &= ~(1<<2)
+#define BLANKEIGHT	Display[1] &= ~(1<<3)
+#define BLANKMTEN	Display[1] &= ~(1<<4)
+#define BLANKELEVEN	Display[1] &= ~(1<<5)
+#define BLANKHALF	Display[1] &= ~(1<<6)
+#define BLANKTIME	Display[1] &= ~(1<<7)
+#define BLANKONE	Display[2] &= ~(1<<0)
+#define BLANKFOUR	Display[2] &= ~(1<<1)
+#define BLANKPAST	Display[2] &= ~(1<<2)
+#define BLANKSEVEN	Display[2] &= ~(1<<3)
+#define BLANKQUARTER	Display[2] &= ~(1<<4)
+#define BLANKHTEN	Display[2] &= ~(1<<5)
+#define BLANKITIS	Display[2] &= ~(1<<6)
+#define BLANKCONFIG	Display[2] &= ~(1<<7)
+
 
 #include <Wire.h> //required for DS1307RTC.h
 #include <Time.h> //Required for timekeeping
@@ -139,7 +216,7 @@ void loop()
         //don't change menus until button is released
         if(currentMillis - previousMillis > BLINKLENGHT) {
           previousMillis = currentMillis;
-          Display[0] ^= (1<<0); //Menu LED toggle
+          TOGGLEITIS; //Menu LED toggle
         }
         updateShiftRegister();
       }

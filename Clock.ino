@@ -1,29 +1,3 @@
-// Display output pin assignments
-#define THREE	Display[0] |= (1<<0)
-#define SIX	Display[0] |= (1<<1)
-#define TWELVE	Display[0] |= (1<<2)
-#define NINE	Display[0] |= (1<<3)
-#define MFIVE	Display[0] |= (1<<4)
-#define OCLOCK	Display[0] |= (1<<5)
-#define TWENTY 	Display[0] |= (1<<6)  
-#define DATE	Display[0] |= (1<<7)
-#define TWO	Display[1] |= (1<<0)
-#define HFIVE	Display[1] |= (1<<1)
-#define TO	Display[1] |= (1<<2)
-#define EIGHT	Display[1] |= (1<<3)
-#define MTEN	Display[1] |= (1<<4)
-#define ELEVEN	Display[1] |= (1<<5)
-#define HALF	Display[1] |= (1<<6)
-#define TIME	Display[1] |= (1<<7)
-#define ONE	Display[2] |= (1<<0)
-#define FOUR	Display[2] |= (1<<1)
-#define PAST	Display[2] |= (1<<2)
-#define SEVEN	Display[2] |= (1<<3)
-#define QUARTER	Display[2] |= (1<<4)
-#define HTEN	Display[2] |= (1<<5)
-#define ITIS	Display[2] |= (1<<6)
-#define CONFIG	Display[2] |= (1<<7)
-
 void ledDisplayTime(){
   
   utc = now();
