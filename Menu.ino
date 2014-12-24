@@ -1,3 +1,54 @@
+#define TOGGLETHREE	Display[0] ^= (1<<0)
+#define TOGGLESIX	Display[0] ^= (1<<1)
+#define TOGGLETWELVE	Display[0] ^= (1<<2)
+#define TOGGLENINE	Display[0] ^= (1<<3)
+#define TOGGLEMFIVE	Display[0] ^= (1<<4)
+#define TOGGLEOCLOCK	Display[0] ^= (1<<5)
+#define TOGGLETWENTY 	Display[0] ^= (1<<6)  
+#define TOGGLEDATE	Display[0] ^= (1<<7)
+#define TOGGLETWO	Display[1] ^= (1<<0)
+#define TOGGLEHFIVE	Display[1] ^= (1<<1)
+#define TOGGLETO	Display[1] ^= (1<<2)
+#define TOGGLEEIGHT	Display[1] ^= (1<<3)
+#define TOGGLEMTEN	Display[1] ^= (1<<4)
+#define TOGGLEELEVEN	Display[1] ^= (1<<5)
+#define TOGGLEHALF	Display[1] ^= (1<<6)
+#define TOGGLETIME	Display[1] ^= (1<<7)
+#define TOGGLEONE	Display[2] ^= (1<<0)
+#define TOGGLEFOUR	Display[2] ^= (1<<1)
+#define TOGGLEPAST	Display[2] ^= (1<<2)
+#define TOGGLESEVEN	Display[2] ^= (1<<3)
+#define TOGGLEQUARTER	Display[2] ^= (1<<4)
+#define TOGGLEHTEN	Display[2] ^= (1<<5)
+#define TOGGLEITIS	Display[2] ^= (1<<6)
+#define TOGGLECONFIG	Display[2] ^= (1<<7)
+
+#define BLANKTHREE	Display[0] &= ~(1<<0)
+#define BLANKSIX	Display[0] &= ~(1<<1)
+#define BLANKTWELVE	Display[0] &= ~(1<<2)
+#define BLANKNINE	Display[0] &= ~(1<<3)
+#define BLANKMFIVE	Display[0] &= ~(1<<4)
+#define BLANKOCLOCK	Display[0] &= ~(1<<5)
+#define BLANKTWENTY 	Display[0] &= ~(1<<6)  
+#define BLANKDATE	Display[0] &= ~(1<<7)
+#define BLANKTWO	Display[1] &= ~(1<<0)
+#define BLANKHFIVE	Display[1] &= ~(1<<1)
+#define BLANKTO	        Display[1] &= ~(1<<2)
+#define BLANKEIGHT	Display[1] &= ~(1<<3)
+#define BLANKMTEN	Display[1] &= ~(1<<4)
+#define BLANKELEVEN	Display[1] &= ~(1<<5)
+#define BLANKHALF	Display[1] &= ~(1<<6)
+#define BLANKTIME	Display[1] &= ~(1<<7)
+#define BLANKONE	Display[2] &= ~(1<<0)
+#define BLANKFOUR	Display[2] &= ~(1<<1)
+#define BLANKPAST	Display[2] &= ~(1<<2)
+#define BLANKSEVEN	Display[2] &= ~(1<<3)
+#define BLANKQUARTER	Display[2] &= ~(1<<4)
+#define BLANKHTEN	Display[2] &= ~(1<<5)
+#define BLANKITIS	Display[2] &= ~(1<<6)
+#define BLANKCONFIG	Display[2] &= ~(1<<7)
+
+
 void configMenu(){
   #ifdef DEBUG
   Serial.println(F("Entered Menu"));
@@ -38,7 +89,7 @@ void configMenu(){
           currentMillis = millis();
           if(currentMillis - previousMillis > BLINKLENGHT) {
             previousMillis = currentMillis;
-            Display[0] ^= (1<<0); //Menu LED toggle
+            TOGGLEITIS; //Menu LED toggle
           }
           updateShiftRegister();
         }
@@ -79,13 +130,24 @@ void configMenu(){
     }
 
     
-    Display[0] &= ~(1<<0);
-    Display[0] &= ~(1<<1);
-    Display[0] &= ~(1<<4);
-    Display[1]=0;
-    for (byte n=0; n<=6; ++n) {
-      Display[2] &= ~(1<<n);
-    }
+    BLANKITIS;
+    BLANKHALF;
+    BLANKMTEN;
+    BLANKONE;
+    BLANKTWO;
+    BLANKTHREE;
+    BLANKFOUR;
+    BLANKHFIVE;
+    BLANKSIX;
+    BLANKSEVEN;
+    BLANKEIGHT;
+    BLANKNINE;
+    BLANKHTEN;
+    BLANKELEVEN;
+    BLANKTWELVE;
+    BLANKCONFIG;
+    BLANKPAST;
+    BLANKQUARTER;
     CONFIG;
 
     if( menu==1 || (menu>=7 && menu!=11) ){
@@ -200,7 +262,7 @@ void configMenu(){
           #endif
           if(currentMillis - previousMillis > BLINKLENGHT) {
             previousMillis = currentMillis;
-            Display[2] ^= (1<<7);//"To" LED blink
+            TOGGLEDATE;//"To" LED blink
           }
           Display[1]=255;
           BlinkM_setRGB(0x09, option*8, EEPROM.read(12), EEPROM.read(13));
@@ -218,7 +280,7 @@ void configMenu(){
           #endif
           if(currentMillis - previousMillis > BLINKLENGHT) {
             previousMillis = currentMillis;
-            Display[2] ^= (1<<7);//"To" LED blink
+            TOGGLEDATE;//"To" LED blink
           }
           Display[1]=255;
           BlinkM_setRGB(0x09, EEPROM.read(11), option, EEPROM.read(13));
@@ -236,7 +298,7 @@ void configMenu(){
           #endif
           if(currentMillis - previousMillis > BLINKLENGHT) {
             previousMillis = currentMillis;
-            Display[2] ^= (1<<7);//"To" LED blink
+            TOGGLEDATE;//"To" LED blink
           }
           Display[1]=255;
           BlinkM_setRGB(0x09, EEPROM.read(11), EEPROM.read(12), option);
@@ -249,7 +311,7 @@ void configMenu(){
         #ifdef DEBUG
         Serial.println(F("Menu 5: Day Brightness"));
         #endif
-        Display[2] &= ~(1<<7);
+        BLANKDATE;
         PAST;
         Display[1]=255;
         break;
@@ -262,7 +324,7 @@ void configMenu(){
         #endif
         if(currentMillis - previousMillis > BLINKLENGHT) {
           previousMillis = currentMillis;
-          Display[0] ^= (1<<6); //"Past" LED Blink
+          TOGGLEPAST; //"Past" LED Blink
         }
         Display[1]=255;
         break;
@@ -272,8 +334,8 @@ void configMenu(){
         #ifdef DEBUG
         Serial.println(F("Menu 7: Hour"));
         #endif
-        Display[0] &= ~(1<<6);
-        Display[0] &= ~(1<<7);
+        BLANKPAST;
+        BLANKTO;
         TIME;
         break;
       case 8:
@@ -308,7 +370,7 @@ void configMenu(){
         #endif
         if(currentMillis - previousMillis > BLINKLENGHT) {
           previousMillis = currentMillis;
-          Display[2] ^= (1<<7); //"Past" LED Blink
+          TOGGLEPAST; //"Past" LED Blink
         }
         break;
       case 12:
