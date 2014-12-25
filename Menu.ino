@@ -30,8 +30,8 @@ void configMenu(){
       if(currentMillis - menuMillis1 > 1000) {
         //reset menu timer to current millis when more than 1000 different
         menuMillis1 = currentMillis;
-      } else if(currentMillis - menuMillis1 > 400) {
-        //change menu when timer is more than 400 different from current
+      } else if(currentMillis - menuMillis1 > 500) {
+        //change menu when timer is more than 500 different from current
         
         while (digitalRead(BUTTON1)==LOW){
           //don't change menus until button is released
@@ -62,8 +62,8 @@ void configMenu(){
       if(currentMillis - menuMillis2 > 1000) {
         //reset timer to current millis when more than 1000 different
         menuMillis2 = currentMillis;
-      } else if(currentMillis - menuMillis2 > 200) {
-        //change option + when timer is more than 200 different from current
+      } else if(currentMillis - menuMillis2 > 300) {
+        //change option + when timer is more than 300 different from current
         menuMillis2 = currentMillis;
         option=option+1;
         option=boundOption(menu,option,false);//check option boundry and rollover
@@ -77,8 +77,8 @@ void configMenu(){
       if(currentMillis - menuMillis3 > 1000) {
         //reset menu timer to current millis more than 1000 different
         menuMillis3 = currentMillis;
-      } else if(currentMillis - menuMillis3 > 200) {
-        //change option - when timer is more than 200 different from current
+      } else if(currentMillis - menuMillis3 > 300) {
+        //change option - when timer is more than 300 different from current
         menuMillis3 = currentMillis;
         option=option-1;
         option=boundOption(menu,option,true);//check option boundry and rollover
@@ -201,6 +201,7 @@ void configMenu(){
 
     if (menu == 5 || menu == 6){
      menu=7;
+     option=loadOption(menu);
     } 
 
     switch (menu) {
