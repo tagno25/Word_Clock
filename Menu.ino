@@ -659,7 +659,7 @@ byte boundOption(byte menuNumber, byte optionValue, boolean inc){
       if (inc){
         return(optionValue+7);
       } else {
-        return(optionValue+7);
+        return(optionValue-7);
       }
       break;
     case 7:
