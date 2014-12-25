@@ -45,6 +45,10 @@ void configMenu(){
         menuMillis1 = currentMillis;
         saveOption(menu, option);//save current option
         menu=menu+1;
+        #ifdef DEBUG
+        Serial.print(F("loadOption: "));
+        Serial.println(loadOption(menu));
+        #endif
         option=loadOption(menu);//load previously set option
       }
     }
@@ -101,8 +105,10 @@ void configMenu(){
     BLANKELEVEN;
     BLANKTWELVE;
     BLANKQUARTER;
+    BLANKTWENTY;
     BLANKCONFIG;
     BLANKTIME;
+    BLANKOCLOCK;
     CONFIG;
 
     if( menu==1 || (menu>=7 && menu!=11) ){
@@ -193,7 +199,7 @@ void configMenu(){
       }
     }
 
-    if (menu == 5){
+    if (menu == 5 || menu == 6){
      menu=7;
     } 
 
@@ -355,6 +361,7 @@ void configMenu(){
         Serial.println(F("Menu 8: Minutes (Tens place)"));
         #endif
         TIME;
+        QUARTER;
         break;
       case 9:
         //Time setup
@@ -363,6 +370,7 @@ void configMenu(){
         Serial.println(F("Menu 9: Minutes (Ones place)"));
         #endif
         TIME;
+        HALF;
         break;
       case 10:
         //Date setup
@@ -380,7 +388,7 @@ void configMenu(){
         #endif
         if(currentMillis - previousMillis > BLINKLENGHT) {
           previousMillis = currentMillis;
-          TOGGLEPAST; //"Past" LED Blink
+          TOGGLEDATE; //"Past" LED Blink
         }
         break;
       case 12:
