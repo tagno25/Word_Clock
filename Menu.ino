@@ -62,7 +62,10 @@ void configMenu(){
         //change option + when timer is more than 200 different from current
         menuMillis2 = currentMillis;
         option=option+1;
-        option=boundOption(menu,option);//check option boundry and rollover
+        option=boundOption(menu,option,false);//check option boundry and rollover
+        #ifdef DEBUG
+        Serial.println(option);
+        #endif
       }
     }
 
@@ -74,7 +77,10 @@ void configMenu(){
         //change option - when timer is more than 200 different from current
         menuMillis3 = currentMillis;
         option=option-1;
-        option=boundOption(menu,option);//check option boundry and rollover
+        option=boundOption(menu,option,true);//check option boundry and rollover
+        #ifdef DEBUG
+        Serial.println(option);
+        #endif
       }
     }
 
@@ -94,9 +100,9 @@ void configMenu(){
     BLANKHTEN;
     BLANKELEVEN;
     BLANKTWELVE;
-    BLANKCONFIG;
-    BLANKPAST;
     BLANKQUARTER;
+    BLANKCONFIG;
+    BLANKTIME;
     CONFIG;
 
     if( menu==1 || (menu>=7 && menu!=11) ){
@@ -187,6 +193,9 @@ void configMenu(){
       }
     }
 
+    if (menu == 5){
+     menu=7;
+    } 
 
     switch (menu) {
       case 1:
@@ -213,8 +222,18 @@ void configMenu(){
             previousMillis = currentMillis;
             TOGGLEDATE;//"To" LED blink
           }
-          Display[1]=255;
-          BlinkM_setRGB(0x09, option*8, EEPROM.read(12), EEPROM.read(13));
+          ONE;
+          TWO;
+          THREE;
+          FOUR;
+          HFIVE;
+          SIX;
+          SEVEN;
+          EIGHT;
+          NINE;
+          HTEN;
+          ELEVEN;
+          TWELVE;
         }
         break;
       case 3:
@@ -231,8 +250,18 @@ void configMenu(){
             previousMillis = currentMillis;
             TOGGLEDATE;//"To" LED blink
           }
-          Display[1]=255;
-          BlinkM_setRGB(0x09, EEPROM.read(11), option, EEPROM.read(13));
+          ONE;
+          TWO;
+          THREE;
+          FOUR;
+          HFIVE;
+          SIX;
+          SEVEN;
+          EIGHT;
+          NINE;
+          HTEN;
+          ELEVEN;
+          TWELVE;
         }
         break;
       case 4:
@@ -249,8 +278,18 @@ void configMenu(){
             previousMillis = currentMillis;
             TOGGLEDATE;//"To" LED blink
           }
-          Display[1]=255;
-          BlinkM_setRGB(0x09, EEPROM.read(11), EEPROM.read(12), option);
+          ONE;
+          TWO;
+          THREE;
+          FOUR;
+          HFIVE;
+          SIX;
+          SEVEN;
+          EIGHT;
+          NINE;
+          HTEN;
+          ELEVEN;
+          TWELVE;
         }
         break;
         case 5:
@@ -262,7 +301,18 @@ void configMenu(){
         #endif
         BLANKDATE;
         PAST;
-        Display[1]=255;
+        ONE;
+        TWO;
+        THREE;
+        FOUR;
+        HFIVE;
+        SIX;
+        SEVEN;
+        EIGHT;
+        NINE;
+        HTEN;
+        ELEVEN;
+        TWELVE;
         break;
       case 6:
         //Brightness Night
@@ -275,7 +325,18 @@ void configMenu(){
           previousMillis = currentMillis;
           TOGGLEPAST; //"Past" LED Blink
         }
-        Display[1]=255;
+        ONE;
+        TWO;
+        THREE;
+        FOUR;
+        HFIVE;
+        SIX;
+        SEVEN;
+        EIGHT;
+        NINE;
+        HTEN;
+        ELEVEN;
+        TWELVE;
         break;
       case 7:
         //Time setup
@@ -540,7 +601,7 @@ byte loadOption(byte menuNumber){
   }
 }
 
-byte boundOption(byte menuNumber, byte optionValue){
+byte boundOption(byte menuNumber, byte optionValue, boolean inc){
   byte monthLength=31;
   switch (menuNumber) {
     case 2:
@@ -586,7 +647,11 @@ byte boundOption(byte menuNumber, byte optionValue){
       //Brightness Day
     case 6:
       //Brightness Night
-      return(optionValue+7);
+      if (inc){
+        return(optionValue+7);
+      } else {
+        return(optionValue+7);
+      }
       break;
     case 7:
       //Time setup

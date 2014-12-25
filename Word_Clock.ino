@@ -4,7 +4,7 @@
 //switches use 3 pins (7,8,9)
 
 //Comment out to disable debug info (Should speed up execution and save space)
-//#define DEBUG
+#define DEBUG
 
 //Use enable to use LCD
 //#define LCD
