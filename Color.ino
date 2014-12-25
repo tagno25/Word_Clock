@@ -31,6 +31,7 @@ void setColor() {
 void holidayColor() {
   #ifdef DEBUG
   Serial.println(F("holidayColor Start"));
+  Serial.print(F("Month: "));
   Serial.println(month());
   #endif
   switch (month()) {

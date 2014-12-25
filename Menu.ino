@@ -491,6 +491,8 @@ void saveOption(byte menuNumber, byte optionValue){
       //Time setup
       // Minutes (Tens place)
       #ifdef DEBUG
+      Serial.println("optionValue = ");
+      Serial.println(optionValue);
       Serial.println((optionValue*10)+loadOption(9));
       #endif
       setTime(hour(), (optionValue*10)+loadOption(9), second(), day(), month(), year());
@@ -499,9 +501,9 @@ void saveOption(byte menuNumber, byte optionValue){
       //Time setup
       // Minutes (Ones place)
       #ifdef DEBUG
-      Serial.println(loadOption(8)+optionValue);
+      Serial.println((loadOption(8)*10)+optionValue);
       #endif
-      setTime(hour(), loadOption(8)+optionValue, second(), day(), month(), year());
+      setTime(hour(), (loadOption(8)*10)+optionValue, second(), day(), month(), year());
       break;
     case 10:
       //Date setup
